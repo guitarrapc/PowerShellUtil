@@ -175,11 +175,16 @@ function Enter-Teraterm{
  
 }
 
-# Test Connection
 <#
-$teraterm="D:\Software\SSH\teraterm\ttermpro.exe"
-$keyFile="D:\Software\Amazon\AWS\KeyPair\awskeyforssh.pem"
-$ip = "ec2-54-245-142-12.us-west-2.compute.amazonaws.com"
-#>
+# Test Connection (Keyfile not allowed contain space)
+$teraterm = "C:\Program Files (x86)\teraterm\ttermpro.exe"
+$keyFile = "D:\Software\AWS\RSA\purplehosts.pem"
+$ip = "192.168.100.1001"
+$port = 22
+$auth="publickey"
+$user="ec2-user"
+$ssh="/ssh2"
 
-#Enter-Teraterm -teraterm $teraterm -ip $ip -port 22 -keyFile $keyFile
+
+Enter-Teraterm -teraterm $teraterm -ip $ip -keyFile $keyFile
+#>

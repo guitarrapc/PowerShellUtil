@@ -154,9 +154,9 @@ function Show-XAMLSystemTime{
 
         #return to Powershell
         return [PSCustomObject]@{
-            Tera=$textboxTera.Text
-			Pem=$textboxPem.Text
-            IP=$textboxIP.Text.Trim()
+            tera=$textboxTera.Text
+			keyFile=$textboxPem.Text
+            ip=$textboxIP.Text.Trim()
         }
 
     }
@@ -198,13 +198,13 @@ $loadXaml =@'
                 />
                 <Button 
                     Name="bOpenFileDialogPem" 
-                    Content="Open Pem File"
+                    Content="Open Pem File(Do not include space in path)"
                     Height="30" Margin="5"
 					HorizontalAlignment="Left" VerticalAlignment="Top" 
                 />
                 <TextBox 
                     Name="textboxPem" 
-                    Text="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem" 
+                    Text="D:\Software\AWS\RSA\purplehosts.pem" 
                     Background="#00AA88"
                     Height="25" Margin="5"
                 />
@@ -233,8 +233,6 @@ $loadXaml =@'
         </Window>
 '@
 
-
-$WPFresult = Show-XAMLSystemTime -loadXaml $loadXaml
 
 function Enter-Teraterm{
  
@@ -297,13 +295,13 @@ function Enter-Teraterm{
     $user="ec2-user",
 
     [Parameter(
-    HelpMessage = "Input rsa key path : default value = C:\Program Files (x86)\teraterm\RSA\purplehosts.pem",
+    HelpMessage = "Input rsa key path : default value = D:\Software\AWS\RSA\purplehosts.pem",
     Position = 6
     )]
     [ValidateScript({Test-Path $_})]
     [ValidateNotNullOrEmpty()]
     [string]
-    $keyFile="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem"
+    $keyFile="D:\Software\AWS\RSA\purplehosts.pem"
  
     )
 
@@ -345,5 +343,8 @@ function Enter-Teraterm{
  
 }
 
-#Get-File -Message "AWS .pem file" -Extention “Pem files (*.pem)|*.pem”
-Enter-Teraterm -teraterm $WPFresult.Tera -ip $WPFresult.IP -keyFile $WPFresult.Pem
+# Open XAML View and get paramters
+$WPFresult = Show-XAMLSystemTime -loadXaml $loadXaml
+
+# Connection (Keyfile not allowed contain space)
+Enter-Teraterm -teraterm $WPFresult.tera -ip $WPFresult.IP -keyFile $WPFresult.keyFile
