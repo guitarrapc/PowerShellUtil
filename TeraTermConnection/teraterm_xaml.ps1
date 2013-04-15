@@ -117,29 +117,41 @@ function Show-XAMLSystemTime{
  
         $bOpenFileDialogTera = $window.FindName("bOpenFileDialogTera")
         $textboxTera = $window.FindName("textboxTera")
-        $bOpenFileDialogPem = $window.FindName("bOpenFileDialogPem")
-        $textboxPem = $window.FindName("textboxPem")
+        $bOpenFileDialogkeyFile = $window.FindName("bOpenFileDialogkeyFile")
+        $textboxkeyFile = $window.FindName("textboxkeyFile")
         $textboxIP = $window.FindName("textboxIP")
         $buttonOK = $window.FindName("buttonOK")
  
+        $jsonFile = "Connection.json"
+
+        #Check json file exist or not
+        if(Test-Path .\$jsonFile)
+        {
+            $jsonRead = Get-Content $jsonFile | ConvertFrom-Json
+            $textboxTera.Text = $jsonRead.tera
+            $textboxkeyFile.Text = $jsonRead.keyFile
+            $textboxIP.Text = $jsonRead.ip
+        }
+
         #bOpenFileDialogTera
+
         $buttonTera_clicked = $bOpenFileDialogTera.add_Click
         $buttonTera_clicked.Invoke({ 
-			$teraResult = Get-File -Message "tterapro.exe" -Extention “exe files (*.exe)|*.exe”
-			if ($teraResult -ne "Cancelled")
-			{
-			 	$textboxTera.Text = $TeraResult
-			}
+		$teraResult = Get-File -Message "tterapro.exe" -Extention “exe files (*.exe)|*.exe”
+		if ($teraResult -ne "Cancelled")
+		{
+		 	$textboxTera.Text = $TeraResult
+		}
 		})
 
-		#bOpenFileDialogPem
-        $buttonPem_clicked = $bOpenFileDialogPem.add_Click
-        $buttonPem_clicked.Invoke({ 
-			$PemResult = Get-File -Message ".pem" -Extention “Pem files (*.pem)|*.pem”
-			if ($PemResult -ne "Cancelled")
-			{
-			 	$textboxPem.Text = $PemResult
-			}
+		#bOpenFileDialogkeyFile
+        $buttonkeyFile_clicked = $bOpenFileDialogkeyFile.add_Click
+        $buttonkeyFile_clicked.Invoke({ 
+		$keyFileResult = Get-File -Message ".pem" -Extention “Pem files (*.pem)|*.pem”
+		if ($keyFileResult -ne "Cancelled")
+		{
+		 	$textboxkeyFile.Text = $keyFileResult
+		}
 		})
 
         #buttonOK event to close window
@@ -153,12 +165,14 @@ function Show-XAMLSystemTime{
         $window.ShowDialog() > $null
 
         #return to Powershell
-        return [PSCustomObject]@{
+        $result = [PSCustomObject]@{
             tera=$textboxTera.Text
-			keyFile=$textboxPem.Text
+			keyFile=$textboxkeyFile.Text
             ip=$textboxIP.Text.Trim()
         }
 
+        $result | ConvertTo-Json -Compress | Out-File .\connection.json
+        return $result
     }
 }
 
@@ -191,19 +205,19 @@ $loadXaml =@'
                     Height="25" Margin="5"
                 />
                 <Label 
-                    Name="labelpem" 
+                    Name="labelkeyFile" 
                     Content="Pem Key :" 
                     Height="30" Margin="2"
 					HorizontalAlignment="Center"
                 />
                 <Button 
-                    Name="bOpenFileDialogPem" 
-                    Content="Open Pem File(Do not include space in path)"
+                    Name="bOpenFileDialogkeyFile" 
+                    Content="Open Pem File"
                     Height="30" Margin="5"
 					HorizontalAlignment="Left" VerticalAlignment="Top" 
                 />
                 <TextBox 
-                    Name="textboxPem" 
+                    Name="textboxkeyFile" 
                     Text="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem" 
                     Background="#00AA88"
                     Height="25" Margin="5"
