@@ -204,7 +204,7 @@ $loadXaml =@'
                 />
                 <TextBox 
                     Name="textboxPem" 
-                    Text="D:\Software\AWS\RSA\purplehosts.pem" 
+                    Text="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem" 
                     Background="#00AA88"
                     Height="25" Margin="5"
                 />
@@ -295,13 +295,13 @@ function Enter-Teraterm{
     $user="ec2-user",
 
     [Parameter(
-    HelpMessage = "Input rsa key path : default value = D:\Software\AWS\RSA\purplehosts.pem",
+    HelpMessage = "Input rsa key path : default value = C:\Program Files (x86)\teraterm\RSA\purplehosts.pem",
     Position = 6
     )]
     [ValidateScript({Test-Path $_})]
     [ValidateNotNullOrEmpty()]
     [string]
-    $keyFile="D:\Software\AWS\RSA\purplehosts.pem"
+    $keyFile="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem"
  
     )
 
@@ -337,7 +337,7 @@ function Enter-Teraterm{
 		$process.StartInfo.WorkingDirectory = (Get-Location).Path
 
 		#"C:\Program Files (x86)\teraterm\ttermpro.exe" 192.168.0.100:22 /ssh2 /auth=publickey /user=user /keyfile=D:\key.rsa
-		$process.StartInfo.Arguments = "$connection $ssh /auth=$auth /user=$user /keyfile=$keyFile"
+		$process.StartInfo.Arguments = "$connection $ssh /auth=$auth /user=$user `"/keyfile=$keyFile`""
 		$process.Start() > $null
     }
  
