@@ -218,7 +218,7 @@ $loadXaml =@'
                 />
                 <TextBox 
                     Name="textboxkeyFile" 
-                    Text="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem" 
+                    Text="C:\Program Files (x86)\teraterm\RSA\rsa.pem" 
                     Background="#00AA88"
                     Height="25" Margin="5"
                 />
@@ -309,13 +309,13 @@ function Enter-Teraterm{
     $user="ec2-user",
 
     [Parameter(
-    HelpMessage = "Input rsa key path : default value = C:\Program Files (x86)\teraterm\RSA\purplehosts.pem",
+    HelpMessage = "Input rsa key path : default value = C:\Program Files (x86)\teraterm\RSA\rsa.pem",
     Position = 6
     )]
     [ValidateScript({Test-Path $_})]
     [ValidateNotNullOrEmpty()]
     [string]
-    $keyFile="C:\Program Files (x86)\teraterm\RSA\purplehosts.pem"
+    $keyFile="C:\Program Files (x86)\teraterm\RSA\rsa.pem"
  
     )
 
