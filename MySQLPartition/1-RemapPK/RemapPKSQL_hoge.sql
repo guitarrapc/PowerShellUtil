@@ -1,0 +1,2 @@
+ALTER TABLE hoge DROP PRIMARY KEY 
+, ADD PRIMARY KEY (id , created );
