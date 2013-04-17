@@ -30,7 +30,7 @@ param
     $IISLogFileHead =  "u_ex",
 
     [Parameter(
-    HelpMessage = "Input date of IIS Log file . Default : `"`"",
+    HelpMessage = "Input date of IIS Log file . Default : `"`" | Sample : `"YYMMDD`" format...means `"130418`" ",
     Position = 2,
     Mandatory = $false,
     ValueFromPipeline = $true,
@@ -109,7 +109,7 @@ function Get-IisLogFileCIps{
         $IISLogFileHead =  "u_ex",
 
         [Parameter(
-        HelpMessage = "Input date of IIS Log file . Default : `"`"",
+        HelpMessage = "Input date of IIS Log file . Default : `"`" | Sample : `"YYMMDD`" format...means `"130418`" ",
         Position = 2,
         Mandatory = $false,
         ValueFromPipeline = $true,
