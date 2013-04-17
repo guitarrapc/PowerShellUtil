@@ -131,10 +131,10 @@ function Show-XAMLSystemTime{
             $textboxTera.Text = $jsonRead.tera
             $textboxkeyFile.Text = $jsonRead.keyFile
             $textboxIP.Text = $jsonRead.ip
+            $textboxIP.Text = $jsonRead.ip
         }
 
         #bOpenFileDialogTera
-
         $buttonTera_clicked = $bOpenFileDialogTera.add_Click
         $buttonTera_clicked.Invoke({ 
 		$teraResult = Get-File -Message "tterapro.exe" -Extention “exe files (*.exe)|*.exe”
@@ -158,6 +158,22 @@ function Show-XAMLSystemTime{
         $buttonOK_clicked = $buttonOK.add_Click
         $buttonOK_clicked.Invoke({ 
         $Window.close()})
+    
+        #buttonOK event to close window
+        $buttonOK_clicked = $buttonOK.add_Click
+        $buttonOK_clicked.Invoke({ 
+        $Window.close()})
+
+        # region / TODO: Keydown Eventの検知
+        <#
+        #textboxip Keydown Event
+        $textboxIP_keydown = $textboxIP.KeyDown
+        if($textboxIP_keydown.Key -eq [System.Windows.Forms.Keys]::Enter)
+        {
+            $textboxIP_keydown.Invoke({$textboxkeyFile.Text = 123})
+        }
+        #>
+
     }
 
     end
