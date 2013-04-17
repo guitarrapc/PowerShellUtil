@@ -95,6 +95,6 @@ function Get-IisLogFileCIps{
 
 "Now Running Scripts, please wait"
 
-Get-IisLogFileCIps -IISLogPath "C:\inetpub\logs\LogFiles\W3SVC1\" | Out-File ./IIS_c-IP_lists.log
+Get-IisLogFileCIps -IISLogPath "C:\inetpub\logs\LogFiles\W3SVC1\" | Export-Csv ./IIS_c-IP_lists_$((Get-Date).ToString("yyyyMMdd")).log -NoTypeInformation
 
 "End Scripts. Please check ./IIS_c-IP_lists.log"
