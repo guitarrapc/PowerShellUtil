@@ -8,7 +8,7 @@ param
     Sample text requires to be pastes.
 
 CREATE TABLE `test_table` (
-	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, COMMENT '参加したユーザーの総戦闘力。バトルに突入した時に加算してく。',
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, COMMENT 'IDだよ！',
 	`result` INT(10) NOT NULL DEFAULT '0' COMMENT '結果。0 = 未、1 = 勝利、2 = 敗退',
 	`created` DATETIME NOT NULL,
 	`modified` DATETIME NOT NULL,
@@ -38,7 +38,7 @@ AUTO_INCREMENT=0;
 
 test_table
 テストだよ！
-参加したユーザーの総戦闘力。バトルに突入した時に加算してく。, 結果。0 = 未、1 = 勝利、2 = 敗退, , , ,
+IDだよ！, 結果。0 = 未、1 = 勝利、2 = 敗退, , , ,
 id, result, created, modified, id,
 
 "@,
@@ -66,7 +66,7 @@ function Get-ColumnCommentSQL{
         Sample text requires to be pastes.
 
 CREATE TABLE `test_table` (
-	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, COMMENT '参加したユーザーの総戦闘力。バトルに突入した時に加算してく。',
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, COMMENT 'IDだよ！',
 	`result` INT(10) NOT NULL DEFAULT '0' COMMENT '結果。0 = 未、1 = 勝利、2 = 敗退',
 	`created` DATETIME NOT NULL,
 	`modified` DATETIME NOT NULL,
@@ -95,7 +95,7 @@ AUTO_INCREMENT=0;
 
 test_table
 テストだよ！
-参加したユーザーの総戦闘力。バトルに突入した時に加算してく。, 結果。0 = 未、1 = 勝利、2 = 敗退, , , ,
+IDだよ！, 結果。0 = 未、1 = 勝利、2 = 敗退, , , ,
 id, result, created, modified, id,
 "@,
         Position = 1,
