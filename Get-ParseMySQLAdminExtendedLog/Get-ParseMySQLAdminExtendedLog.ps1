@@ -63,8 +63,53 @@
 #
 # ---------------------------------------
 
+[CmdletBinding(  
+    SupportsShouldProcess = $false,
+    ConfirmImpact = "none"
+)]
+param
+(
+    [Parameter(
+    HelpMessage = "Select Connection Parameter Name you want to pickup",
+    Position = 0
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet(
+        "Aborted_connects",
+        "Connections",
+        "Max_used_connections",
+        "Threads_cached",
+        "Threads_connected",
+        "Threads_created",
+        "Threads_running"
+    )] 
+    [string]
+    $Keyword,
+
+
+    [Parameter(
+    HelpMessage = "Input Path of Logfile.",
+    Position = 1
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateScript({Test-Path $_})]
+    [string]
+    $Path,
+
+
+    [Parameter(
+    HelpMessage = "Select this switch if you want to sort unique for value",
+    Position = 2
+    )]
+    [switch]
+    $Unique
+
+
+)
+
 
 function Get-ParseMySQLAdminExtendedLog{
+
 
     [CmdletBinding(  
         SupportsShouldProcess = $false,
@@ -89,6 +134,7 @@ function Get-ParseMySQLAdminExtendedLog{
         [string]
         $Keyword,
 
+
         [Parameter(
         HelpMessage = "Input Path of Logfile.",
         Position = 1
@@ -98,6 +144,7 @@ function Get-ParseMySQLAdminExtendedLog{
         [string]
         $Path,
 
+
         [Parameter(
         HelpMessage = "Select this switch if you want to sort unique for value",
         Position = 2
@@ -105,11 +152,14 @@ function Get-ParseMySQLAdminExtendedLog{
         [switch]
         $Unique
 
+
     )
+
 
     Begin
     {
     }
+
 
     Process
     {
@@ -125,6 +175,7 @@ function Get-ParseMySQLAdminExtendedLog{
             }
     }
 
+
     end
     {
         switch($true)
@@ -135,12 +186,16 @@ function Get-ParseMySQLAdminExtendedLog{
     }
 }
 
+
 #region Debug sample
 <#
     # output non unique result.
     Get-ParseMySQLAdminExtendedLog -Keyword Max_used_connections -Path .\status_connection_admin.log
 
+
     # output unique result.
     Get-ParseMySQLAdminExtendedLog -Keyword Max_used_connections -Path .\status_connection_admin.log -Unique
 #>
 #endregion
+
+Get-ParseMySQLAdminExtendedLog -Keyword $Keyword -Path $Path $Unique
