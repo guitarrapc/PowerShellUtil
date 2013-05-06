@@ -1,6 +1,6 @@
 @echo off
 
-echo �Ǘ��҂Ŏ��s���邱�ƁI�I (ExecutionPolicy - �����̂̃G���[���o�܂�)
+echo 管理者で実行すること！！ (ExecutionPolicy - 権限ののエラーが出ます)
 
 
 powershell.exe -ExecutionPolicy RemoteSigned -File .\Get-ColumnCommentSQL.ps1 

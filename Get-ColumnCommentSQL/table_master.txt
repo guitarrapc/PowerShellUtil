@@ -1,12 +1,12 @@
 CREATE TABLE `test_table` (
-	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, COMMENT 'ID‚¾‚æI',
-	`result` INT(10) NOT NULL DEFAULT '0' COMMENT 'Œ‹‰ÊB0 = –¢A1 = Ÿ—˜A2 = ”s‘Þ',
+	`id` BIGINT(20) UNSIGNED NOT NULL AUTO_INCREMENT, COMMENT 'IDã ã‚ˆï¼',
+	`result` INT(10) NOT NULL DEFAULT '0' COMMENT 'çµæžœã€‚0 = æœªã€1 = å‹åˆ©ã€2 = æ•—é€€',
 	`created` DATETIME NOT NULL,
 	`modified` DATETIME NOT NULL,
 	PRIMARY KEY (`id`),
 	INDEX `	result` (`result`)
 )
-COMMENT='ƒeƒXƒg‚¾‚æI'
+COMMENT='ãƒ†ã‚¹ãƒˆã ã‚ˆï¼'
 COLLATE='utf8_unicode_ci'
 ENGINE=InnoDB
 AUTO_INCREMENT=0;
