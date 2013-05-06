@@ -1,19 +1,19 @@
 -- Step1
-/* PK�̊m�F - id�ł͂Ȃ�Date�ōs���̂ŁA�Ώۂ�Date�J������PKI�ɓ����Ă��邱�Ƃ��m�F */
+/* PKの確認 - idではなくDateで行うので、対象のDateカラムがPKIに入っていることを確認 */
 ALTER TABLE hoge DROP PRIMARY KEY
 , ADD PRIMARY KEY (id, created); 
 
 -- Ste2
-/* UNIQUE KEY��PK���܂߂� */
+/* UNIQUE KEYにPKを含める */
 
-/* ��ɐV����UNIQUE KEY��ǉ� */
+/* 先に新しいUNIQUE KEYを追加 */
 ALTER TABLE hoge ADD UNIQUE (history_id, no, id, created); 
-/* ���ɌÂ�UNIQUE KEY���폜 */
+/* 次に古いUNIQUE KEYを削除 */
 ALTER TABLE hoge DROP INDEX history_id;
 	
 
 
--- Step2 PKI���܂߂� Partitioning���{
+-- Step2 PKIを含めて Partitioning実施
 ALTER TABLE PARTITION BY
 	range(to_days(created_days))( 
 		PARTITION pyyyymmdd VALUES LESS THAN (to_days('yyyy-MM-dd hh:mm:ss')) COMMENT = ''
@@ -24,10 +24,10 @@ ALTER TABLE PARTITION BY
 
 
 /*
-REORGANIZE PARTITION ����ɂ� ADD PARTITION ����ɂ��e�[�u�����b�N���������Ȃ�
-���O�ɂ܂Ƃ߂ăK�K�b�ƃp�[�e�B�V����������Ⴄ�ꍇ������
+REORGANIZE PARTITION するにも ADD PARTITION するにもテーブルロックが避けられない
+事前にまとめてガガッとパーティション作っちゃう場合が多い
 
-���ADaily�����ł�Add Partition���삪��u�̂��߁AReorganize����Add�ŁB
+が、Daily処理でのAdd Partition操作が一瞬のため、ReorganizeよりはAddで。
 */
 
 
@@ -52,7 +52,7 @@ ALTER TABLE hoge
 
 
 
--- Step5 Partitioning�̏�
+-- Step5 Partitioningの状況
 SELECT
 	  table_schema
 	, table_name
@@ -70,7 +70,7 @@ WHERE
 
 
 
--- Step6 ����Partition���g���Ă��邩
+-- Step6 そのPartitionが使われているか
 explain partitions 
 SELECT
 	  * 
@@ -95,7 +95,7 @@ ALTER TABLE hoge REMOVE PARTITIONING;
 
 -- ###################################################################################################
 
--- ����͂��� (PK��UNIQUE��������K�v�����邪�A���x��Type�̖��ɂ�����)
+-- これはだめ (PKにUNIQUEを加える必要があるが、今度はTypeの問題にあたる)
 /*
 CREATE TABLE test (
 	id INT NOT NULL AUTO_INCREMENT,
@@ -108,7 +108,7 @@ CREATE TABLE test (
 */
 
 
--- PK��Unique�Ɋ܂߂邱�ƂŁAPK�̈��Patrition���\�ɂȂ�
+-- PKをUniqueに含めることで、PKの一つでPatritionが可能になる
 CREATE TABLE test (
 	id INT NOT NULL AUTO_INCREMENT,
 	hoge VARCHAR(32) NOT NULL,
@@ -146,7 +146,7 @@ ALTER TABLE test
 
 
 
--- Partition�ǉ����̊m�FSQL
+-- Partition追加時の確認SQL
 SELECT TO_DAYS(created_dt), TO_DAYS('2013-04-05') FROM test WHERE TO_DAYS(created_dt) = TO_DAYS('2013-04-03');
 
 
