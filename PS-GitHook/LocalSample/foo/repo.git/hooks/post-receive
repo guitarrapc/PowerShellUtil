@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# . /home/username/repo.git/hooks/post-receive
+echo "test post-receive"
+
+# -----------------------
+#powershell sample
+# -----------------------
+whoami
+pwd
+cd hooks
+C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -ExecutionPolicy RemoteSigned -File .\\AutoPull_test.ps1
+
+# -----------------------
+#bash sample
+# -----------------------
+#pwd # post-receive‚ªÀs‚³‚ê‚é‚Æ‚«‚Írepo.git/‚É‚¢‚é
+#cd ..
+#cd receive # --git-dir‚ğİ’è‚·‚é‚½‚ß‚ÉˆÚ“®‚·‚é
+#pwd
+#git --git-dir=.git pull ../repo.git master
