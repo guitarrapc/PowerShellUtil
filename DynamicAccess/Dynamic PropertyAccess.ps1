@@ -9,7 +9,7 @@ $path.$property
 $property = "fullname"
 $path.$property
 
-$propaies = $path | Get-Member -MemberType Properties | select -ExpandProperty Name
+$propaties = $path | Get-Member -MemberType Properties | select -ExpandProperty Name
 
 foreach ($p in $propaies)
 {
