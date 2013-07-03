@@ -17,3 +17,25 @@ foreach ($p in $propaies)
     $path.$p | Format-Table -AutoSize
     ""
 }
+
+$Users = [PSCustomObject]@{
+    hoge="hoge"
+    fuga="fuga"
+    foo="foo"
+}
+
+$prop = $Users | Get-Member -MemberType Properties
+
+foreach ($p in $prop)
+{
+    $PSModulePath = "C:\Users\$($Users.$p)\Documents\WindowsPowerShell\Modules"
+    if (-not(Test-Path $PSModulePath))
+    {
+        Write-Verbose "Create Module path"
+        New-Item -Path $PSModulePath -ItemType Directory -Force
+    }
+    else
+    {
+        Write-Verbose " $PSModulePath already exist. Nothing had changed. `n"
+    }
+}
