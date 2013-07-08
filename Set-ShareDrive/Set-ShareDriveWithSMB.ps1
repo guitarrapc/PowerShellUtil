@@ -9,8 +9,8 @@ Remove-SmbMapping -LocalPath z: -Force
 
 # Use CIM Session for secure credential
 $Credential = Get-Credential
-$CimSession = New-CimSession -Credential $Credential
-New-SmbMapping -LocalPath z: -RemotePath \\127.0.0.1\Users -Persistent $true -CimSession $CimSession
+$CimSession = New-CimSession -ComputerName hogehoge -Credential $Credential
+New-SmbMapping -LocalPath z: -RemotePath \\hogehoge\Users -Persistent $true -CimSession $CimSession
 
 # PS-Drive with credential
 $SharePath = "\\共有したいドライブパス"
