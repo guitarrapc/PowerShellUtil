@@ -1,4 +1,4 @@
-﻿if (-not(Get-NetFirewallRule -Name PowerShellRemoting-In))
+﻿if (-not(Get-NetFirewallRule | where Name -eq PowerShellRemoting-In))
 {
     New-NetFirewallRule `
         -Name PowerShellRemoting-In `
@@ -24,5 +24,6 @@
 }
 else
 {
-    
+        Write-Verbose "Windows PowerShell Remoting port TCP 5985 was alredy opend. Show Rule"
+        Get-NetFirewallPortFilter -Protocol TCP | where Localport -eq 5985
 }
