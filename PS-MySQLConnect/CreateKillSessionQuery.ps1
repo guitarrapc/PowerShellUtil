@@ -3,9 +3,9 @@ $ImportCSV = "processlist.txt"
 
 $csv = Import-Csv -Path .\$ImportCSV
 
+$ExcludeUser = "adminUser"
 $ExcludeIP = "10.0.0.100"
 $KillQueryType = "select*"
-$ExcludeUser = "adminUser"
 
 $sql = $csv | where User -ne $ExcludeUser | where Host -ne $ExcludeIP | where Info -like $KillQueryType | %{"kill " + $_.id + ";"}
 $sql | clip
