@@ -15,9 +15,10 @@
         $KBNumber = $k.HotfixId.Replace("KB", "")
 	    
         # Write-Host $KBNumber
+        Write-Host ("Removing update with command: " + $RemovalCommand)
+
         # Build command line for removing the update
         $RemovalCommand = "wusa.exe /uninstall /kb:$KBNumber /quiet /log /norestart"
-        Write-Host ("Removing update with command: " + $RemovalCommand)
 
         # Invoke the command we built above
         Invoke-Expression $RemovalCommand
