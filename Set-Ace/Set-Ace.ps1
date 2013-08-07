@@ -12,7 +12,7 @@
 
     if (Test-Path -Path $path)
     {
-        start-process -FilePath takeown -ArgumentList "/F $path /A /R"
+        Start-Process -FilePath takeown -ArgumentList "/F $path /A /R"
     }
     else
     {
