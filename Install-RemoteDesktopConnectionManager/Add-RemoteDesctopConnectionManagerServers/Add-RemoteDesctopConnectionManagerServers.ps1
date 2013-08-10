@@ -11,7 +11,7 @@
     {
         $result += "        <server>"
         $result += "            <name>192.168.0.$server</name>"
-        $result += "            <displayName>10.0.0.$server</displayName>"
+        $result += "            <displayName>192.168.0.$server</displayName>"
         $result += "            <comment />"
         $result += '            <logonCredentials inherit="FromParent" />'
         $result += '            <connectionSettings inherit="FromParent" />'
