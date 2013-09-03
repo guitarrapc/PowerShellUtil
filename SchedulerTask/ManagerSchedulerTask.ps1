@@ -27,7 +27,7 @@ Register-ScheduledTask -TaskPath \ -TaskName test -Action $action -Trigger $trig
 Register-ScheduledTask -TaskPath \ -TaskName test -Action $action -Trigger $trigger -Settings $settings -Force
 
 # 設定の取得
-$task = Get-ScheduledTask -TaskName test -TaskPath \
+Get-ScheduledTask -TaskName test -TaskPath \
 
 # 開始 / 停止
 Start-ScheduledTask -TaskPath \ -TaskName test
