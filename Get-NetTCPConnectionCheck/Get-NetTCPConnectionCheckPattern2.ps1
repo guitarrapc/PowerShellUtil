@@ -7,7 +7,7 @@
     
     begin
     {
-        $result = @{}
+        $result = [ordered]@{}
     }
 
     process
@@ -37,10 +37,10 @@
 
 }
 
-"Date, Listen, Established, TimeWait, CloseWait, LastAck" | Out-File -Encoding utf8 -FilePath c:\logs\tcpconnection.log
+"Date, Listen, Established, TimeWait, CloseWait, LastAck" 
 while (1)
 {
     $result = Get-NetTCPConnectionCheck
-    "$($result.date), $($result.Established), $($result.CloseWait), $($result.Listen)" | Out-File -Encoding utf8 -FilePath c:\logs\tcpconnection.log -Append
+    "$($result.date), $($result.Established), $($result.CloseWait), $($result.Listen)" 
     sleep 1
 }

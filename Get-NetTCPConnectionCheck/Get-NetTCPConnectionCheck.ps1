@@ -15,8 +15,7 @@
         $result.date = (Get-Date).ToString("yyyy/MM/dd HH:mm:dd:ss")
 
         $connection = Get-NetTCPConnection
-        $statuslist = @("Listen","Established","TimeWait","CloseWait","LastAck")
-        $status = ($connection | group state -NoElement | where Name -in $statuslist).Name
+        $status = ($connection | group state -NoElement).Name
 
         foreach ($c in $($connection | group State -NoElement))
         {
@@ -39,6 +38,6 @@
 
 while (1)
 {
-    Get-NetTCPConnectionCheck | Out-File -Encoding utf8 -FilePath c:\logs\tcpconnection.log -Append
+    Get-NetTCPConnectionCheck
     sleep 1
 }
