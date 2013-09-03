@@ -15,7 +15,7 @@
         $result.date = (Get-Date).ToString("yyyy/MM/dd HH:mm:dd:ss")
 
         $connection = Get-NetTCPConnection
-        $statuslist = @("Listen","Established","CloseWait","LastAck")
+        $statuslist = @("Listen","Established","TimeWait","CloseWait","LastAck")
         $status = ($connection | group state -NoElement | where Name -in $statuslist).Name
 
         foreach ($c in $($connection | group State -NoElement))
