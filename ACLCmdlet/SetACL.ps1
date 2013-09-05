@@ -7,5 +7,5 @@ $objType = [System.Security.AccessControl.AccessControlType]::Allow
 $objACE = New-Object System.Security.AccessControl.FileSystemAccessRule ($objUser, $Rights, $InheritanceFlag, $PropagationFlag, $objType)
 
 $objACL = Get-ACL "C:\test12"
-$objACL.AddAccessRule($objACE)
+$objACL.SetAccessRule($objACE)
 Set-Acl -Path C:\test -AclObject $objACL
