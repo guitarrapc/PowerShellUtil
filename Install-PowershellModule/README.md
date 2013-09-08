@@ -23,11 +23,45 @@ PowerShell .\Install.ps1
 
 # Cmdlet
 
-Here's cmdlet ioncluded in install.ps1
+Here's cmdlet included in install.ps1
+
 You can specify $modulepath if demand, default is "$env:userProfile\documents\WindowsPowerShell\Modules".
 ```PowerShell
-Copy-Module # Copy items to module path "$env:userProfile\documents\WindowsPowerShell\Modules".
-Get-OperatingSystemVersion # Obtain current operation system version. (It requires 6, means Windows 8 = PowerShell 3.0 and later)
-New-ModulePath # Create Module path if not exist
-Test-ModulePath # Test "$env:userProfile\documents\WindowsPowerShell\Modules" is exist or not.
+Copy-Module
+Get-OperatingSystemVersion 
+New-ModulePath
+Test-ModulePath 
+```
+
+### Get-OperatingSystemVersion
+
+Returns Win32_OperatingSystem.Version property.
+```
+Get-OperatingSystemVersion
+```
+
+### Test-ModulePath
+
+Test "$env:userProfile\documents\WindowsPowerShell\Modules" is exist or not.
+This Cmdlet will only work with Windows 8 / Windows Server 2012 and later. (It requires Operation System Version for 6, means Windows 8 = PowerShell 3.0 and later)
+It will returns bool for result.
+
+```
+Test-ModulePath [-modulepath] <string>  [<CommonParameters>]
+```
+
+### New-ModulePath
+
+Create Module path if not exist.
+
+```
+New-ModulePath [-modulepath] <string>  [<CommonParameters>]
+```
+
+### Copy-Module
+
+Copy items to module path "$env:userProfile\documents\WindowsPowerShell\Modules".
+
+```
+Copy-Module [-path] <string> [-destination] <string>  [<CommonParameters>]
 ```
