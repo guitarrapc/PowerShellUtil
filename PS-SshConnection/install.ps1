@@ -9,7 +9,16 @@ Param(
         ValueFromPipelineByPropertyName)]
 
     [string]
-    $path = $(Split-Path $PSCommandPath -Parent)
+    $path = $(Split-Path $PSCommandPath -Parent),
+
+    [Parameter(
+        Position = 1,
+        Mandatory = 0,
+        ValueFromPipeline,
+        ValueFromPipelineByPropertyName)]
+
+    [string]
+    $modulepath = "$env:userProfile\documents\WindowsPowerShell\Modules"
 )
 
 Function Get-OperatingSystemVersion{
@@ -20,26 +29,44 @@ Function Test-ModulePath{
 
     [CmdletBinding()]
     param(
+    [Parameter(
+        Position = 0,
+        Mandatory = 1,
+        ValueFromPipeline,
+        ValueFromPipelineByPropertyName)]
+    [string]
+    $modulepath        
     )
-
-    $script:modulepath = "$env:userProfile\documents\WindowsPowerShell\Modules"
  
     Write-Verbose "Checking Module Home."
     if ([int](Get-OperatingSystemVersion).substring(0,1) -ge 6) 
-    { 
-        if(-not(Test-Path -path $modulepath))
-        {
-            Write-Verbose "Creating Module Home at $modulepath"
-            New-Item -Path $modulepath -itemtype directory > $null
-        }
-        else
-        {
-            Write-Verbose "$modulepath already exist. Escape from creating module Directory."
-        }
+    {
+        Write-Verbose "Your operating system is later then Windows 8 / Windows Server 2012. Continue evaluation."
+        return Test-Path -path $modulepath
     }
-
-    return $modulepath
 }
+
+Function New-ModulePath{
+
+    [CmdletBinding()]
+    param(
+    [Parameter(
+        Position = 0,
+        Mandatory = 1,
+        ValueFromPipeline,
+        ValueFromPipelineByPropertyName)]
+    [string]
+    $modulepath
+    )
+
+    if ([int](Get-OperatingSystemVersion).substring(0,1) -ge 6) 
+    {         
+        Write-Verbose "Creating Module Home at $modulepath"
+        New-Item -Path $modulepath -itemtype directory > $null
+        Write-Verbose "$modulepath already exist. Escape from creating module Directory."
+    }
+}
+
 
 Function Copy-Module{
     
@@ -123,7 +150,11 @@ Function Copy-Module{
 Write-Host "Starting check Module path and Copy PowerShell Scripts job." -ForegroundColor Green
 
 Write-Host "Checking is Module Path exist not not." -ForegroundColor Green
-$modulepath = Test-ModulePath
+if(-not(Test-ModulePath -modulepath $modulepath))
+{
+    Write-Warning "$modulepath not found. creating module path."
+    New-ModulePath -modulepath $modulepath
+}
 
 Write-Host "Copying Scripts to Module path." -ForegroundColor Green
 $destinationtfolder = Copy-Module -path $path -destination $modulepath
