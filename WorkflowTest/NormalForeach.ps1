@@ -1,6 +1,4 @@
-﻿Measure-Command{
-    foreach ($C in @("10.0.4.100","10.0.4.101"))
-    {
-        Test-Connection -ComputerName 127.0.0.1
-    }
+﻿foreach ($pc in @("10.0.3.100","10.0.3.150"))
+{
+    Test-Connection -ComputerName $pc
 }

@@ -1,19 +1,14 @@
-﻿workflow testforeach{
+﻿workflow test-workflowforeachparallel{
 
     param(
     $computerName
     )
 
-    foreach -parallel ($C in $PSComputerName)
+    foreach -parallel ($pc in $computerName)
     {
-        Test-Connection -ComputerName 127.0.0.1
+        Test-Connection -ComputerName $pc
     }
 
 }
 
-Measure-Command{
-
-    #@("10.0.4.100","10.0.4.101") | testforeach -PSComputerName $_
-testforeach -pscomputerName @("10.0.4.100","10.0.4.101")
-
-}
+test-workflowforeachparallel -computerName ("10.0.3.100","10.0.3.150")

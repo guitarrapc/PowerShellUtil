@@ -29,9 +29,9 @@
         {
             inlinescript
             {
-                #$WorkflowScript = [ScriptBlock]::Create($using:ScriptBlock)
-                #Invoke-Command -ScriptBlock {&$WorkflowScript} -ErrorAction Stop
-                Invoke-RestMethod -Method Get -Uri google.com
+                # ScriptBlock は生成してから行う
+                $WorkflowScript = [ScriptBlock]::Create($using:ScriptBlock)
+                Invoke-Command -ScriptBlock {&$WorkflowScript} -ErrorAction Stop
             }
         }
     }
@@ -41,12 +41,19 @@
         {
             inlinescript
             {
+                # Invoke-Command とことなり生成が不要
                 Invoke-Expression -Command $using:expression
             }
         }
     }
+    
+
+    # ScriptBlock でも Expression でもなく直接 PowerShell cmdlet を利用する
+    Invoke-RestMethod -Method Get -Uri google.com
 }
 
-#Invoke-WorkflowParallel -scriptBlock {Invoke-RestMethod -Method Get -Uri google.com} -array 1,2,3,4,5
-#Invoke-WorkflowParallel -expression "Invoke-RestMethod -Method Get -Uri google.com" -array 1,2,3,4,5
+# ScriptBlock で実行する場合
 Invoke-WorkflowParallel -scriptBlock {Invoke-RestMethod -Method Get -Uri google.com} -array 1,2,3,4,5
+
+# Expression で実行する場合
+Invoke-WorkflowParallel -expression "Invoke-RestMethod -Method Get -Uri google.com" -array 1,2,3,4,5
