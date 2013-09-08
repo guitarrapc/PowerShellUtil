@@ -77,7 +77,7 @@ Function Copy-Module{
             position = 0,
             ValueFromPipeline,
             ValueFromPipelineByPropertyName)]
-        [validateScript({Test-Path $path})]
+        [validateScript({Test-Path $_})]
         [string]
         $path,
 
