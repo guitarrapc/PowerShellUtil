@@ -7,7 +7,7 @@ function Filelock{
             position = 0,
             mandatory
         )]
-        [string]
+        [System.IO.FileInfo]
         $Path
     )
     
