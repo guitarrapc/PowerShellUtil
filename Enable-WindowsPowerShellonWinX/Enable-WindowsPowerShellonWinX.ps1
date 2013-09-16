@@ -11,5 +11,4 @@ Set-ItemProperty -Path $PowerShellPath -Name $PowerShellKey -Value 1 -PassThru
 Set-ItemProperty -Path $PowerShellPath -Name $PowerShellKey -Value 0 -PassThru
 
 # Restart Explorer.exe then change take effect
-Stop-Process -Name explorer -Force
-Start-Process C:\Windows\explorer.exe
+Get-Process | where Name -eq Explorer |Stop-Process -Force -PassThru | %{Start-Process C:\Windows\explorer.exe}
