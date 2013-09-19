@@ -18,7 +18,7 @@ Get-ChildItem -Path $targetpath `
         if ($matchingname)
         {
             # get index of validation (valid = -1)
-            $validationIndex = $matchingname.IndexOfAny($invalidpath)
+            $validationIndex = $matchingname.IndexOfAny($invalidfilename)
 
             # execute rename
             if ($validationIndex -eq "-1")
