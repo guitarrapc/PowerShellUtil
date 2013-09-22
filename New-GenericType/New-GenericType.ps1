@@ -35,8 +35,7 @@
     {
         [Type]$genericTypeName = $typeName + "." + $className + '`' + $typeParameters.Count
         $closedtype = $genericTypeName.MakeGenericType([Type[]]$typeParameters)
-        $geneticInstance = ,[Activator]::CreateInstance($closedType, $constructorParameters)
-        return $geneticInstance
+        ,[Activator]::CreateInstance($closedType, $constructorParameters)
     }
     catch
     {
@@ -44,9 +43,8 @@
     }
 
 }
-
 $list = New-GenericType -className List -typeParameters "System.String"
-$list.GetType().FullName
+$list.GetType().Fullname
 
-$dic = New-GenericType -className Dictionary -typeParameters ("System.String","System.String")
-$dic.GetType().FullName
+$dic = New-GenericType -className Dictionary -typeParameters ("System.String",$list.GetType().FullName)
+$dic.GetType().Fullname
