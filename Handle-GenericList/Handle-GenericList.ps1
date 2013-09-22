@@ -1,6 +1,9 @@
 ﻿# PowerShell List Execution Sample
 
-# Create Generic List
+# Create Generic List for int
+$list = New-Object 'System.Collections.Generic.List[System.Int32]'
+
+# Create Generic List for string
 $list = New-Object 'System.Collections.Generic.List[System.String]'
 
 # Add items to list
@@ -57,11 +60,17 @@ $list.RemoveAt(0) # delete b
 # RemoveRange method to delete specific range items
 $list.RemoveRange(0,1) # delete c and d
 
-
 # check item is exist or not
 $list.Contains("f") #true
 $list.Contains("a") #false
 
+# output items into single String line with , foreach items
+[string[]]$stringarray = $list.ToArray()
+$stringSeparateComma = [string]::Join(",",$stringarray)
+$stringSeparateComma # c,d,e,f,g,h
+
+$string = [string]::Join(",",$stringarray) # No separate
+$string # cdefgh
 
 # clear list
 $list.Clear()
