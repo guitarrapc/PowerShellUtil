@@ -21,6 +21,7 @@ $list.AddRange([string[]]@("e","f","g","h")) # make sure type match for list
 
 
 # find matched item of System.Predicate using ScriptBlock (anonymous delegates)
+$list.Find("a")  # return a
 $list.Find({$args -eq "a"})  # return a
 $list.Find({$args -ceq "A"}) # nothing return
 $list.Find({$args -eq "Z"})  # nothing return
@@ -69,7 +70,7 @@ $list.Contains("a") #false
 $stringSeparateComma = [string]::Join(",",$stringarray)
 $stringSeparateComma # c,d,e,f,g,h
 
-$string = [string]::Join(",",$stringarray) # No separate
+$string = [string]::Join("",$stringarray) # No separate
 $string # cdefgh
 
 # clear list
