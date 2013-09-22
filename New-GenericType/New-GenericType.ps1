@@ -24,7 +24,7 @@
         $constructorParameters,
 
         [parameter(
-            position = 2,
+            position = 3,
             mandatory = 0,
             helpMessage = "Input Class name of Generic")]
         [string]
