@@ -1,10 +1,10 @@
 ﻿# PowerShell List Execution Sample
 
 # Create Generic List for int
-$list = New-Object 'System.Collections.Generic.List[System.Int32]'
+$list = New-Object 'System.Collections.Generic.List[int]'
 
 # Create Generic List for string
-$list = New-Object 'System.Collections.Generic.List[System.String]'
+$list = New-Object 'System.Collections.Generic.List[string]'
 
 # Add items to list
 $list.Add("a")
@@ -21,7 +21,7 @@ $list.AddRange([string[]]@("e","f","g","h")) # make sure type match for list
 
 
 # find matched item of System.Predicate using ScriptBlock (anonymous delegates)
-$list.Find("a")  # return a
+$list.Find("a")  # return Error
 $list.Find({$args -eq "a"})  # return a
 $list.Find({$args -ceq "A"}) # nothing return
 $list.Find({$args -eq "Z"})  # nothing return

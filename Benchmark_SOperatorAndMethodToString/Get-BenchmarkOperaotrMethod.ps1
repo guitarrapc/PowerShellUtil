@@ -73,7 +73,7 @@ function Get-ListForeachTest{
     $int
     )
  
-    $list  = New-Object 'System.Collections.Generic.List[System.String]'
+    $list  = New-Object 'System.Collections.Generic.List[string]'
  
     measure-Command{
         foreach ($i in $int)
@@ -118,7 +118,7 @@ function Get-ListAddForeachTest{
     $int
     )
  
-    $list  = New-Object 'System.Collections.Generic.List[System.String]'
+    $list  = New-Object 'System.Collections.Generic.List[string]'
  
     measure-Command{
         foreach ($i in $int)
