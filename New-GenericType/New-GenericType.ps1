@@ -43,8 +43,11 @@
     }
 
 }
+
+
+# sample
 $list = New-GenericType -className List -typeParameters "System.String"
-$list.GetType().Fullname
+$list.GetType().Fullname # System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
 
 $dic = New-GenericType -className Dictionary -typeParameters ("System.String",$list.GetType().FullName)
-$dic.GetType().Fullname
+$dic.GetType().Fullname # System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
