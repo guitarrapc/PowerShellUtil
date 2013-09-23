@@ -30,7 +30,8 @@ Put switch for Profile you want to create from below.
 -AllUsersCurrentPSISEHost     : All user's both PowerShell_ise.exe will be affect.
 ```
 
-# How Cmdlets works
+# How Cmdlets work?
+
 |Cmdlets|Description|
 |:--:|--|
 |Backup-PSProfile|This Cmdlet will backup you profile to backup folder under profile path.|
