@@ -33,7 +33,7 @@ Put switch for Profile you want to create from below.
 # How Cmdlets work?
 
 |Cmdlets | Description|
-|:--:|--|
+|:----:|----|
 |Backup-PSProfile | This Cmdlet will backup you profile to backup folder under profile path.|
 |Edit-PSProfile | If you run with psise, then profile file will on in psise, if not then notepad will open|
 |Get-PSProfile | This Cmdlet will Get Profile file information.|
