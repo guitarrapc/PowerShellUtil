@@ -1,4 +1,4 @@
-﻿function New-ObjectGenericType{
+﻿function New-ObjectGeneric{
 
     [CmdletBinding()]
     param(
@@ -46,11 +46,11 @@
 
 
 # sample
-$list = New-GenericType -className List -typeParameters "string"
+$list = New-ObjectGeneric -className List -typeParameters "string"
 $list.GetType().Fullname # System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
 
-$dic = New-GenericType -className Dictionary -typeParameters ("string",$list.GetType().FullName)
+$dic = New-ObjectGeneric -className Dictionary -typeParameters ("string",$list.GetType().FullName)
 $dic.GetType().Fullname # System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
 
-$dic = New-GenericType -className Dictionary -typeParameters ("string",$list.GetType().FullName)
+$dic = New-ObjectGeneric -className Dictionary -typeParameters ("string",$list.GetType().FullName)
 $dic.GetType().Fullname # System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Collections.Generic.List`1[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
