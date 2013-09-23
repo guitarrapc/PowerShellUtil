@@ -12,5 +12,5 @@
                                  Publisher = $installedAppsInfo.Publisher}
         $arrayList.Add($obj) > $null
     }
-    $arrayList | where DisplayName
+    $arrayList | where DisplayName | sort DisplayName
 }
