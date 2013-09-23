@@ -1,0 +1,1 @@
+﻿Write-Host ("Hello PS Profile from {0}" -f $PSCommandPath) -ForegroundColor Green
