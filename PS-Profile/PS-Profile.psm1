@@ -2,7 +2,7 @@
 
 function New-UserModulePath{
 
-    $userPSroot = $env:PSModulePath -split ";" | where {$_ -like ("{0}*" -f (Split-Path $profile -Parent))}
+    $userPSroot = $env:PSModulePath -split ";" | where {$_ -like ("{0}*" -f (Split-Path $profile.CurrentUserAllHosts -Parent))}
 
     if(-not(Test-Path $userPSroot))
     {
