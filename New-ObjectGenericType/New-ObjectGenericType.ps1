@@ -1,4 +1,4 @@
-﻿function New-GenericType{
+﻿function New-ObjectGenericType{
 
     [CmdletBinding()]
     param(
