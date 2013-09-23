@@ -21,7 +21,7 @@ All PS-Profile Cmndlets offer you common switch for profile path selection.
 
 Put switch for Profile you want to create from below.
 
-```Powershell
+```text
 -CurrentUserAllHosts          : Current user's both PowerShell.exe and PowerShell_ise.exe will be affect.
 --CurrentUserCurrentPSHost    : Current user's PowerShell.exewill be affect.
 --CurrentUserCurrentPSISEHost : Current user's PowerShell_ise.exe will be affect.
