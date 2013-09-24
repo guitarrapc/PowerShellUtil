@@ -14,3 +14,5 @@
     }
     $arrayList | where DisplayName | sort DisplayName
 }
+
+Find-InstalledApplicationInfo
