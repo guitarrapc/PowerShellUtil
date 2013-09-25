@@ -18,7 +18,7 @@ Param(
         ValueFromPipelineByPropertyName)]
 
     [string]
-    $modulepath = ($env:PSModulePath -split ";" | where {$_ -like ("{0}*" -f [environment]::GetFolderPath("MyDocuments"))})
+    $modulepath = "$env:userProfile\documents\WindowsPowerShell\Modules"
 )
 
 Function Get-OperatingSystemVersion{
