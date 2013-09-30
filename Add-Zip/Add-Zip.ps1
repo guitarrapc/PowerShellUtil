@@ -1,6 +1,6 @@
 ﻿function Add-Zip{
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = "move")]
 	param(
         [parameter(
             mandatory,
@@ -25,7 +25,21 @@
             valuefrompipeline,
             valuefrompipelinebypropertyname)]
         [string]
-        $zipfilefolder = $null
+        $zipfilefolder = $null,
+
+        [parameter(
+            mandatory = 0,
+            position = 3,
+            parametersetname = "move")]
+        [switch]
+        $move,
+
+        [parameter(
+            mandatory = 0,
+            position = 3,
+            parametersetname = "copy")]
+        [switch]
+        $copy
     )
 
     $ErrorActionPreference = "Continue"
@@ -48,9 +62,9 @@
                 # set zip folder if null
                 if (-not($zipfilefolder))
                 {
-                    $zipfilefolder = (Get-ChildItem $f).DirectoryName
+                    $zipfilefolder = (Get-ChildItem $f.FullName).DirectoryName | sort -Unique
                 }
-
+                
                 # create zip folder
                 if (-not(Test-Path $zipfilefolder))
                 {
@@ -59,7 +73,7 @@
 
                 # create zip path
                 $zippath = Join-Path $zipfilefolder $zipfilename
-
+                
                 # create zip
 	            if(-not(Test-Path $zippath))
 	            {
@@ -74,15 +88,33 @@
 	            $zipPackage = $shellApplication.NameSpace($zippath)
 
                 # copy items to zip
-                if($f.fullname -ne $zippath)
+                switch ($true)
                 {
-                    Write-Verbose ("copying item {0} to {1}" -f $f.fullname, $zippath)
-                    $zipPackage.CopyHere($f.FullName)
+                    $move {
+                        if($f.fullname -ne $zippath)
+                        {
+                            Write-Verbose ("moving item {0} to {1}" -f $f.fullname, $zippath)
+                            $zipPackage.MoveHere($f.FullName)
+                        }
+                        else
+                        {
+                            Write-Verbose ("source item {0} was same as zipfile {1}. skip to next." -f $f.fullname, $zippath)
+                        }
+                    }
+                    $copy {
+                        if($f.fullname -ne $zippath)
+                        {
+                            Write-Verbose ("copying item {0} to {1}" -f $f.fullname, $zippath)
+                            $zipPackage.CopyHere($f.FullName)
+                        }
+                        else
+                        {
+                            Write-Verbose ("source item {0} was same as zipfile {1}. skip to next." -f $f.fullname, $zippath)
+                        }
+                    }
                 }
-                else
-                {
-                    Write-Verbose ("source item {0} was same as zipfile {1}. skip to next." -f $f.fullname, $zippath)
-                }
+
+                # sleep for next, otherwise sometimes item skip by system
                 sleep -milliseconds 500	
             }
             else
