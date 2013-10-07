@@ -39,18 +39,30 @@
     {
     }
 
+    # check file is directory
+    $file = Get-Item -Path $source
+
+    # set zip extension
     $zipExtension = ".zip"
+
+    # set desktop as destination path if it null
+    if ([string]::IsNullOrWhiteSpace($destination))
+    {
+        if ($file.Mode -like "d*")
+        {
+            $destination = (Join-Path ([System.Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)) (([System.IO.Path]::GetFileNameWithoutExtension($source)) + $zipExtension))
+        }
+        else
+        {
+            $destination = (Join-Path ([System.Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)) (([System.IO.Path]::GetFileNameWithoutExtension(($file | select -First 1 -ExpandProperty fullname))) + $zipExtension))
+        }
+        
+    }
 
     # check destination is input as .zip
     if (-not($destination.EndsWith($zipExtension)))
     {
         throw ("destination parameter value [{0}] not end with extension {1}" -f $destination, $zipExtension)
-    }
-
-    # set desktop as destination path if it null
-    if ([string]::IsNullOrWhiteSpace($destination))
-    {
-        $destination = (Join-Path ([System.Environment]::GetFolderPath([Environment+SpecialFolder]::Desktop)) (([System.IO.Path]::GetFileNameWithoutExtension($source)) + $zipExtension))
     }
 
     # check destination is already exist or not
@@ -59,12 +71,11 @@
         Remove-Item -Path $destination -Confirm
     }
 
+
     # compressionLevel
     $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
 
-    # check file is directory
-    $file = Get-Item -Path $source
-
+    # check file mode for source
     Write-Verbose ("file.mode = {0}" -f $file.Mode)
 
     if ($file.Mode -like "d*") # Directory should be d---
