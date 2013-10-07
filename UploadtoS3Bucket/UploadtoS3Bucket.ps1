@@ -24,7 +24,7 @@ try
 
     # get s3 object
     Invoke-RestMethod -Method Get -Uri (Get-S3PreSignedURL -BucketName $s3bucketname -Key $file.Name -Expires $expiredate) -OutFile ("d:\" + $file.BaseName + 2 + $file.Extension )
-    (Get-S3PreSignedURL -BucketName $s3bucketname -Key $file.Name -Expires "2013/12/31")
+    (Get-S3PreSignedURL -BucketName $s3bucketname -Key $file.Name -Expires $expiredate)
 }
 catch
 {
