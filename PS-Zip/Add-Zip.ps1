@@ -79,7 +79,7 @@
 	            {
                     Write-Verbose ("Creating zip file {0}" -f $zippath)
 
-		            Set-Content $zippath ("PK" + [char]5 + [char]6 + ("$([char]0)" * 18))
+                    Set-Content $zippath ("PK" + [char]5 + [char]6 + ("$([char]0)" * 18))
                     (Get-Item $zippath).IsReadOnly = $false
 	            }
 
@@ -126,4 +126,4 @@
 }
 
 # this method have problem that often could not complete compression with com
-Add-Zip -inputfile ("c:\test",".\test", ".\test") -zipfilename hoge.zip -Verbose
+# Add-Zip -inputfile ("c:\test",".\test", ".\test") -zipfilename hoge.zip -Verbose
