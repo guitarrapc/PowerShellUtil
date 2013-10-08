@@ -204,8 +204,8 @@
         $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
 
         # show file property
-        Write-Verbose ("file.PSISContainer = {0}" -f $file.PSISContainer)
-        Write-Verbose ("file.count = {0}" -f $file.count)
+        Write-Verbose ("file.PSISContainer : {0}" -f $file.PSISContainer)
+        Write-Verbose ("file.count : {0}" -f $file.count)
 
         Write-Debug "execute compression"
         if ($file.PSISContainer -and ($file.count -eq 1))
@@ -216,10 +216,10 @@
                 $includeBaseDirectory = $true
 
                 Write-Verbose "Detected as Directory"
-                Write-Verbose ("destination = {0}" -f $destination)
-                Write-Verbose ("file.fullname = {0}" -f $file.FullName)
-                Write-Verbose ("compressionLevel = {0}" -f $compressionLevel)
-                Write-Verbose ("includeBaseDirectory = {0}" -f $includeBaseDirectory)
+                Write-Verbose ("destination : {0}" -f $destination)
+                Write-Verbose ("file.fullname : {0}" -f $file.FullName)
+                Write-Verbose ("compressionLevel : {0}" -f $compressionLevel)
+                Write-Verbose ("includeBaseDirectory : {0}" -f $includeBaseDirectory)
 
                 if ($quiet)
                 {
@@ -248,21 +248,21 @@
                 $includeBaseDirectory = $true
 
                 Write-Verbose "Detected as source which use * without extension"
-                Write-Verbose ("destination = {0}" -f $destination)
-                Write-Verbose ("file.fullname = {0}" -f $file.FullName)
-                Write-Verbose ("compressionLevel = {0}" -f $compressionLevel)
-                Write-Verbose ("includeBaseDirectory = {0}" -f $includeBaseDirectory)
+                Write-Verbose ("destination : {0}" -f $destination)
+                Write-Verbose ("file.fullname : {0}" -f $file.FullName)
+                Write-Verbose ("compressionLevel : {0}" -f $compressionLevel)
+                Write-Verbose ("includeBaseDirectory : {0}" -f $includeBaseDirectory)
 
                 if ($quiet)
                 {
                     Write-Verbose ("zipping up folder {0} to {1}" -f $file.FullName, $destination)
-                    [System.IO.Compression.ZipFile]::CreateFromDirectory($file.fullname,$destination,$compressionLevel,$includeBaseDirectory) > $null
+                    [System.IO.Compression.ZipFile]::CreateFromDirectory($file.FullName,$destination,$compressionLevel,$includeBaseDirectory) > $null
                     $?
                 }
                 else
                 {
                     Write-Verbose ("zipping up folder {0} to {1}" -f $file.FullName, $destination)
-                    [System.IO.Compression.ZipFile]::CreateFromDirectory($file.fullname,$destination,$compressionLevel,$includeBaseDirectory)
+                    [System.IO.Compression.ZipFile]::CreateFromDirectory($file.FullName,$destination,$compressionLevel,$includeBaseDirectory)
                     Get-Item $destination
                 }
             }
@@ -284,16 +284,14 @@
 
                 foreach ($file in $files)
                 {
-                    $file2 = $file.name
-
                     Write-Verbose "Detected as File"
-                    Write-Verbose ("destzip = {0}" -f $destzip)
-                    Write-Verbose ("file.fullname = {0}" -f $file.FullName)
-                    Write-Verbose ("file2 = {0}" -f $file2)
-                    Write-Verbose ("compressionLevel = {0}" -f $compressionLevel)
+                    Write-Verbose ("destzip : {0}" -f $destzip)
+                    Write-Verbose ("file.fullname : {0}" -f $file.FullName)
+                    Write-Verbose ("file.name : {0}" -f $file2)
+                    Write-Verbose ("compressionLevel : {0}" -f $compressionLevel)
 
                     Write-Verbose ("zipping up files {0} to {1}" -f $file.FullName, $destzip)
-                    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($destzip, $file.fullname, $file2, $compressionLevel) > $null
+                    [System.IO.Compression.ZipFileExtensions]::CreateEntryFromFile($destzip, $file.FullName, $file.Name, $compressionLevel) > $null
                 }
 
                 # show result
@@ -329,8 +327,8 @@
             $endsw = $sw.Elapsed.TotalMilliseconds
             $endtime = Get-Date
 
-            Write-Verbose ("Start time`t: {0}" -f $starttime.DateTime)
-            Write-Verbose ("End time`t: {0}" -f $endtime.DateTime)
+            Write-Verbose ("Start time`t: {0:o}" -f $starttime)
+            Write-Verbose ("End time`t: {0:o}" -f $endtime)
             Write-Verbose ("Duration`t: {0} ms" -f $endsw)
         }
     }
@@ -488,8 +486,8 @@ function New-ZipExtract{
             $sourcezip = [System.IO.Compression.Zipfile]::Open($source,"Update")
             $compressionLevel = [System.IO.Compression.CompressionLevel]::Optimal
 
-            Write-Verbose ("sourcezip = {0}" -f $sourcezip)
-            Write-Verbose ("destination = {0}" -f $destination)
+            Write-Verbose ("sourcezip : {0}" -f $sourcezip)
+            Write-Verbose ("destination : {0}" -f $destination)
 
             Write-Debug "Execute Main Process ExtractToDirectory."
             if ($quiet)
@@ -524,9 +522,9 @@ function New-ZipExtract{
             $endsw = $sw.Elapsed.TotalMilliseconds
             $endtime = Get-Date
 
-            Write-Verbose ("Start time : {0}" -f $starttime.DateTime)
-            Write-Verbose ("End time : {0}" -f $endtime.DateTime)
-            Write-Verbose ("Duration milli sec : {0}" -f $endsw)
+            Write-Verbose ("Start time`t: {0:o}" -f $starttime)
+            Write-Verbose ("End time`t: {0:o}" -f $endtime)
+            Write-Verbose ("Duration`t: {0} ms" -f $endsw)
         }
     }
 }
