@@ -55,3 +55,102 @@ New-ZipExtract -source D:\test\hoge.zip
 New-ZipExtract -source D:\test\hoge.ps1 -force
 ```
 
+# Test Passed
+
+This module checkes with following test.
+
+#### Condition
+
+```PowerShell
+PS D:\> Get-ChildItem D:\hoge
+```
+
+result :
+
+```text
+    Directory: D:\hoge
+
+
+Mode         LastWriteTime Length Name       
+----         ------------- ------ ----       
+d---- 2013/10/08     16:59        Ori        
+-a--- 2013/10/07      8:38    489 dsc-zip.ps1
+-a--- 2013/09/26      5:00     40 test.ps1   
+-a--- 2013/10/07      9:39     40 test2.ps1  
+```
+
+#### Compres Test
+
+$ErrorActionPreference = "stop"
+
+try
+{
+    1
+    New-ZipCompress -source D:\hoge -destination d:\hoge.zip -verbose
+    2
+    New-ZipCompress -source D:\hoge -verbose
+    3
+    New-ZipCompress -source D:\hoge -force -verbose
+    4
+    New-ZipCompress -source D:\hoge -safe -verbose
+    5
+    New-ZipCompress -source D:\hoge\ -quiet -verbose
+    6
+    New-ZipCompress -source D:\hoge\* -destination d:\hoge.zip -verbose
+    7
+    New-ZipCompress -source D:\hoge\* -verbose
+    8
+    New-ZipCompress -source D:\hoge\* -force -verbose
+    9
+    New-ZipCompress -source D:\hoge\* -safe -verbose
+    10
+    New-ZipCompress -source D:\hoge\* -quiet -verbose
+    11
+    New-ZipCompress -source D:\hoge\*.ps1 -destination d:\hoge.zip -verbose
+    12
+    New-ZipCompress -source D:\hoge\*.ps1 -verbose
+    13
+    New-ZipCompress -source D:\hoge\*.ps1 -force -verbose
+    14
+    New-ZipCompress -source D:\hoge\*.ps1 -safe -verbose
+    15
+    New-ZipCompress -source D:\hoge\*.ps1 -quiet -verbose
+    16
+    New-ZipCompress -source R:\ -destination d:\hoge.zip -verbose
+    17
+    New-ZipCompress -source R:\ -verbose
+    18
+    New-ZipCompress -source R:\ -force -verbose
+    19
+    New-ZipCompress -source R:\ -safe -verbose
+    20
+    New-ZipCompress -source R:\ -quiet -verbose
+}
+catch
+{
+    Write-Error $_
+}
+
+
+
+#### Extract Test
+
+$ErrorActionPreference = "stop"
+
+try
+{
+    1
+    New-ZipExtract -source D:\hoge.zip -destination d:\hogehogehoge -verbose
+    2
+    New-ZipExtract -source D:\hoge.zip -verbose
+    3
+    New-ZipExtract -source D:\hoge.zip -force -verbose
+    4
+    New-ZipExtract -source D:\hoge.zip -safe -verbose
+    5
+    New-ZipExtract -source D:\hoge.zip -quiet -verbose
+}
+catch
+{
+    Write-Error $_
+}
