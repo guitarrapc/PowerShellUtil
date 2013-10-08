@@ -81,6 +81,7 @@ d---- 2013/10/08     16:59        Ori
 
 #### Compres Test
 
+```PowerShell
 $ErrorActionPreference = "stop"
 
 try
@@ -130,11 +131,12 @@ catch
 {
     Write-Error $_
 }
-
+```
 
 
 #### Extract Test
 
+```PowerShell
 $ErrorActionPreference = "stop"
 
 try
@@ -154,3 +156,4 @@ catch
 {
     Write-Error $_
 }
+```
