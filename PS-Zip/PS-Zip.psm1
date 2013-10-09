@@ -1,4 +1,6 @@
-﻿function New-ZipCompress{
+﻿#Requires -Version 3.0
+
+function New-ZipCompress{
 
     [CmdletBinding(DefaultParameterSetName="safe")]
     param(
