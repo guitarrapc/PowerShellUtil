@@ -1,6 +1,4 @@
-﻿#Requires -Version 3.0
-
-function New-ZipCompress{
+﻿function New-ZipCompress{
 
     [CmdletBinding(DefaultParameterSetName="safe")]
     param(
@@ -24,18 +22,24 @@ function New-ZipCompress{
             mandatory = 0,
             position = 2)]
         [switch]
+        $relative,
+
+        [parameter(
+            mandatory = 0,
+            position = 3)]
+        [switch]
         $quiet,
 
         [parameter(
             mandatory = 0,
-            position = 3,
+            position = 4,
             ParameterSetName="safe")]
         [switch]
         $safe,
 
         [parameter(
             mandatory = 0,
-            position = 3,
+            position = 4,
             ParameterSetName="force")]
         [switch]
         $force
@@ -81,6 +85,7 @@ function New-ZipCompress{
         # set zip extension
         $zipExtension = ".zip"
 
+        # absolute destination
         Write-Debug ("set desktop as destination path destination {0} is null" -f $destination)
         if ([string]::IsNullOrWhiteSpace($destination))
         {
@@ -132,73 +137,199 @@ function New-ZipCompress{
                 Write-Verbose ("zipExtension : {0}" -f $zipExtension)
 
                 $destination = Join-Path $desktop ($filename + $zipExtension)
-            }   
-        }
-
-        Write-Debug "check destination is input as .zip"
-        if (-not($destination.EndsWith($zipExtension)))
-        {
-            throw ("destination parameter value [{0}] not end with extension {1}" -f $destination, $zipExtension)
-        }
-
-        Write-Debug "check destination is already exist, CreateFromDirectory Method will fail with same name of destination file."
-        if (Test-Path $destination)
-        {
-            if ($safe)
-            {
-                Write-Debug "safe output zip file to new destination path, avoiding destination zip name conflict."
-
-                # show warning for same destination exist.
-                Write-Verbose ("Detected destination name {0} is already exist." -f $destination)
-
-                $olddestination = $destination
-
-                # get current destination information
-                $destinationRoot = [System.IO.Path]::GetDirectoryName($destination)
-                $destinationfile = [System.IO.Path]::GetFileNameWithoutExtension($destination)
-                $destinationExtension = [System.IO.Path]::GetExtension($destination)
-
-                # renew destination name with (2)...(x) until no more same name catch.
-                $count = 2
-                $destination = Join-Path $destinationRoot ($destinationfile + "(" + $count + ")" + $destinationExtension)
-                while (Test-Path $destination)
-                {
-                    ++$count
-                    $destination = Join-Path $destinationRoot ($destinationfile + "(" + $count + ")" + $destinationExtension)
-                }
-
-                # show warning as destination name had been changed due to escape error.
-                Write-Warning ("Safe old deistination {0} change to new name {1}" -f $olddestination, $destination)
             }
-            else
+        }
+        elseif ($destination.EndsWith(".") -or $destination.EndsWith("\") -or $destination.EndsWith("/") -or ([System.IO.Path]::GetExtension($destination) -eq ""))
+        {
+            $destinationpath = $destination
+
+            if ($file.PSISContainer -and ($file.count -eq 1))
             {
-                if($force)
+                Write-Verbose "Detected as Directory"
+
+                if ($file.FullName -eq $file.Root)
                 {
-                    Write-Warning ("force replacing old zip file {0}" -f $destination)
-                    Remove-Item -Path $destination -Force
+                    $filename = $file.PSDrive.Name
                 }
                 else
                 {
-                    Remove-Item -Path $destination -Confirm
+                    # remove \ or / on last letter of source
+                    $fullpath = Join-Path (Split-Path -Path $file -Parent) (Split-Path -Path $file -Leaf)
+                    $filename = [System.IO.Path]::GetFileName($fullpath)
                 }
 
-                if (Test-Path $destination)
-                {
-                    Write-Warning "Cancelled removing item. Quit cmdlet execution."
-                    return
-                }
+                Write-Verbose ("destinationpath : {0}" -f $destinationpath)
+                Write-Verbose ("GetFileName : {0}" -f $filename)
+                Write-Verbose ("zipExtension : {0}" -f $zipExtension)
+
+                $destination = Join-Path $destinationpath ($filename + $zipExtension)
             }
+            elseif ($file.PSISContainer -and ($file.count -gt 1) -and ($source[-1] -eq "*"))
+            {
+                Write-Verbose "Detected as source which use * without extension"
+                Write-Verbose "create zip from parent directory when last letter of source was wildcard *"
+            
+                $filename = ([System.IO.Path]::GetFileNameWithoutExtension($file.FullName))
+
+                Write-Verbose ("destinationpath : {0}" -f $destinationpath)
+                Write-Verbose ("GetFileName : {0}" -f $filename)
+                Write-Verbose ("zipExtension : {0}" -f $zipExtension)
+
+                $destination = Join-Path $destinationpath ($filename + $zipExtension)
+            }
+            else
+            {
+                Write-Verbose "Detected as File"
+
+                # use first file name as zip name
+                $filename = ([System.IO.Path]::GetFileNameWithoutExtension(($file | select -First 1 -ExpandProperty fullname)))
+
+                Write-Verbose ("SourcePath : {0}" -f $sourcepath)
+                Write-Verbose ("GetFileName : {0}" -f ([System.IO.Path]::GetFileNameWithoutExtension(($file | select -First 1 -ExpandProperty fullname))))
+                Write-Verbose ("zipExtension : {0}" -f $zipExtension)
+
+                $destination = Join-Path $sourcepath ($filename + $zipExtension)
+            }
+        }
+        elseif (([System.IO.Path]::GetExtension($destination) -ne "") -and ([System.IO.Path]::GetExtension($destination) -ne $zipExtension))
+        {
+            throw ("destination [{0}] extension {1} was not zip extension {2}" -f $destination, [System.IO.Path]::GetExtension($destination), $zipExtension)
         }
         else
         {
-            Write-Debug ("Destination not found. Check parent folder for destination {0} is exist." -f $destination)
-            $parentpath = Split-Path $destination -Parent
+            Resolve-Path $destination
+        }
 
-            if (-not(Test-Path $parentpath))
+        # relative destination
+        if ($relative)
+        {
+            $tmp = $env:TMP
+
+            if ($file.PSISContainer -and ($file.count -eq 1))
             {
-                Write-Warning ("Parent folder {0} not found. Creating path." -f $parentpath)
-                New-Item -Path $parentpath -ItemType Directory -Force
+                Write-Verbose "Detected as Directory"
+
+                if ($file.FullName -eq $file.Root)
+                {
+                    $filename = $file.PSDrive.Name
+                }
+                else
+                {
+                    # remove \ or / on last letter of source
+                    $fullpath = Join-Path (Split-Path -Path $file -Parent) (Split-Path -Path $file -Leaf)
+                    $filename = [System.IO.Path]::GetFileName($fullpath)
+                }
+
+                Write-Verbose ("Tmp : {0}" -f $tmp)
+                Write-Verbose ("GetFileName : {0}" -f $filename)
+                Write-Verbose ("zipExtension : {0}" -f $zipExtension)
+
+                $destination = Join-Path $tmp ($filename + $zipExtension)
             }
+            elseif ($file.PSISContainer -and ($file.count -gt 1) -and ($source[-1] -eq "*"))
+            {
+                Write-Verbose "Detected as source which use * without extension"
+                Write-Verbose "create zip from parent directory when last letter of source was wildcard *"
+            
+                $filename = ([System.IO.Path]::GetFileNameWithoutExtension($file.FullName))
+
+                Write-Verbose ("Tmp : {0}" -f $tmp)
+                Write-Verbose ("GetFileName : {0}" -f $filename)
+                Write-Verbose ("zipExtension : {0}" -f $zipExtension)
+
+                $destination = Join-Path $tmp ($filename + $zipExtension)
+
+            }
+            else
+            {
+                Write-Verbose "Detected as File"
+
+                # use first file name as zip name
+                $filename = ([System.IO.Path]::GetFileNameWithoutExtension(($file | select -First 1 -ExpandProperty fullname)))
+
+                Write-Verbose ("Tmp : {0}" -f $tmp)
+                Write-Verbose ("GetFileName : {0}" -f ([System.IO.Path]::GetFileNameWithoutExtension(($file | select -First 1 -ExpandProperty fullname))))
+                Write-Verbose ("zipExtension : {0}" -f $zipExtension)
+
+                $destination = Join-Path $tmp ($filename + $zipExtension)
+            }
+        }
+
+        Write-Debug "check destination is already exist, CreateFromDirectory Method will fail with same name of destination file."
+        # swap destination for temporary
+        if ($relative)
+        {
+            $newdestination = $ExecutionContext.SessionState.Path.NormalizeRelativePath($destination, $source)
+            Push-Location (Split-Path -Path $source -Parent)
+            $currentdestination = $destination
+            $destination = $newdestination
+        }
+
+            # execute check
+            if (Test-Path $destination)
+            {
+                if ($safe)
+                {
+                    Write-Debug "safe output zip file to new destination path, avoiding destination zip name conflict."
+
+                    # show warning for same destination exist.
+                    Write-Verbose ("Detected destination name {0} is already exist." -f $destination)
+
+                    $olddestination = $destination
+
+                    # get current destination information
+                    $destinationRoot = [System.IO.Path]::GetDirectoryName($destination)
+                    $destinationfile = [System.IO.Path]::GetFileNameWithoutExtension($destination)
+                    $destinationExtension = [System.IO.Path]::GetExtension($destination)
+
+                    # renew destination name with (2)...(x) until no more same name catch.
+                    $count = 2
+                    $destination = Join-Path $destinationRoot ($destinationfile + "(" + $count + ")" + $destinationExtension)
+                    while (Test-Path $destination)
+                    {
+                        ++$count
+                        $destination = Join-Path $destinationRoot ($destinationfile + "(" + $count + ")" + $destinationExtension)
+                    }
+
+                    # show warning as destination name had been changed due to escape error.
+                    Write-Warning ("Safe old deistination {0} change to new name {1}" -f $olddestination, $destination)
+                }
+                else
+                {
+                    if($force)
+                    {
+                        Write-Warning ("force replacing old zip file {0}" -f $destination)
+                        Remove-Item -Path $destination -Force
+                    }
+                    else
+                    {
+                        Remove-Item -Path $destination -Confirm
+                    }
+
+                    if (Test-Path $destination)
+                    {
+                        Write-Warning "Cancelled removing item. Quit cmdlet execution."
+                        return
+                    }
+                }
+            }
+            else
+            {
+                Write-Debug ("Destination not found. Check parent folder for destination {0} is exist." -f $destination)
+                $parentpath = Split-Path $destination -Parent
+
+                if (-not(Test-Path $parentpath))
+                {
+                    Write-Warning ("Parent folder {0} not found. Creating path." -f $parentpath)
+                    New-Item -Path $parentpath -ItemType Directory -Force > $null
+                }
+            }
+
+        # back destination
+        if ($relative)
+        {
+            $destination = $currentdestination
+            Pop-Location
         }
 
 
@@ -233,7 +364,6 @@ function New-ZipCompress{
                 {
                     Write-Verbose ("zipping up folder {0} to {1}" -f $file.FullName, $destination)
                     [System.IO.Compression.ZipFile]::CreateFromDirectory($file.fullname,$destination,$compressionLevel,$includeBaseDirectory)
-                    Get-Item $destination
                 }
             }
             catch
@@ -265,7 +395,6 @@ function New-ZipCompress{
                 {
                     Write-Verbose ("zipping up folder {0} to {1}" -f $file.FullName, $destination)
                     [System.IO.Compression.ZipFile]::CreateFromDirectory($file.FullName,$destination,$compressionLevel,$includeBaseDirectory)
-                    Get-Item $destination
                 }
             }
             catch
@@ -301,11 +430,6 @@ function New-ZipCompress{
                 {
                     $?
                 }
-                else
-                {
-                    Get-Item $destination
-                }
-
             }
             catch
             {
@@ -318,6 +442,14 @@ function New-ZipCompress{
                 $destzip.Dispose()
             }
         }
+
+        if ($relative)
+        {
+            Move-Item -Path $destination -Destination $newdestination -Force
+        }
+
+        # Show result
+        Get-Item $destination
     }
 
     end
