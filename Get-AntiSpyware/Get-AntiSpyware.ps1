@@ -21,6 +21,11 @@ function Get-AntiSpyware
     Get-AntiSpyware -computerName 192.168.100.1 -credential $cred
 
 .EXAMPLE
+    # this will obtain from 192.168.100.1 with credential you enter.
+    $cred = Get-Credential
+    "server01","server02" | Get-AntiSpyware -credential $cred
+
+.EXAMPLE
     # Output sample
     --------------------
     isplayName               : Windows Defender
@@ -43,6 +48,7 @@ function Get-AntiSpyware
                    ValueFromPipelineByPropertyName, 
                    Position=0)]
         [ValidateNotNullOrEmpty()]
+        [string]
         $computerName = [System.Environment]::MachineName,
 
         # Input PSCredential for $ComputerName
@@ -62,9 +68,7 @@ function Get-AntiSpyware
     {
         if ($PSBoundParameters.count -eq 0)
         {
-            $OSName = (Get-CimInstance -ClassName Win32_OperatingSystem).Caption
-
-            if ($OSName -notlike "*server*")
+            if ((Get-CimInstance -namespace "root" -className "__Namespace").Name -contains $nameSpace)
             {
                 Write-Verbose ("localhost cim session")
                 Get-CimInstance -Namespace "root\$nameSpace" -ClassName $className
@@ -76,9 +80,9 @@ function Get-AntiSpyware
         }
         else
         {
-            Write-Verbose ("creating cim session for {0}" -f $computerName)
             try
             {
+                Write-Verbose ("creating cim session for {0}" -f $computerName)
                 $cimSession = New-CimSession @PSBoundParameters
                 if ((Get-CimInstance -namespace "root" -className "__Namespace" -cimsession $cimSession).Name -contains $nameSpace)
                 {
