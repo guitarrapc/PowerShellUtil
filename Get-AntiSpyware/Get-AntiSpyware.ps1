@@ -100,8 +100,3 @@ function Get-AntiSpyware
     {
     }
 }
-
-Get-AntiSpyware -computerName 54.250.158.159 -credential (Get-ValentiaCredential)
-Get-AntiSpyware -computerName 127.0.0.1
-Get-AntiSpyware
-
