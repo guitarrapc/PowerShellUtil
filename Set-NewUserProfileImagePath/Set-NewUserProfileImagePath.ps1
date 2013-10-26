@@ -1,4 +1,5 @@
 ﻿#Requires -RunAsAdministrator
+#Requires -Version 4.0
 
 function Set-NewUserProfileImagePath
 {
