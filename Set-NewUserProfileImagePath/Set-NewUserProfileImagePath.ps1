@@ -48,19 +48,19 @@ Set-NewUserProfileImagePath -user share -currentUserFolderName hoge -newUserFold
     begin
     {
         # get foler information
-        $usersFolder = Split-Path $env:USERPROFILE -Parent
-        $currentUserFolder = Get-ChildItem $usersFolder | where PSISContainer | where Name -eq $currentUserFolderName
-        $newuserFolder = Join-Path $usersFolder $newUserFolderName
+        $private:usersFolder = Split-Path $env:USERPROFILE -Parent
+        $private:currentUserFolder = Get-ChildItem $usersFolder | where PSISContainer | where Name -eq $currentUserFolderName
+        $private:newuserFolder = Join-Path $usersFolder $newUserFolderName
         
         # get registry information
-        $registryPath = "registry::HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList"
-        $users = Get-CimInstance Win32_UserAccount            
-        $sid = $users.Where({$_.Name -eq $user}).SID
+        $private:registryPath = "registry::HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\ProfileList"
+        $private:users = Get-CimInstance Win32_UserAccount            
+        $private:sid = $users.Where({$_.Name -eq $user}).SID
 
         # set registry information
-        $regSidDetail = Get-ItemProperty -Path (Join-Path $registryPath $sid)
-        $currentProfileImagePath = $regSidDetail.ProfileImagePath
-        $newProfileImagePath = if ($force)
+        $private:regSidDetail = Get-ItemProperty -Path (Join-Path $registryPath $sid)
+        $private:currentProfileImagePath = $regSidDetail.ProfileImagePath
+        $private:newProfileImagePath = if ($force)
             {
                 $newuserFolder
             }
@@ -90,12 +90,12 @@ Set-NewUserProfileImagePath -user share -currentUserFolderName hoge -newUserFold
                 }
                 else
                 {
-                    Write-Warning ("currentUserFolder '{0}' detected as null." -f $currentUserFolder.FullName)
+                    Write-Warning ("newUserFolder '{0}' detected as same as currentUserFolder '{1}'." -f $newUserFolder, $currentUserFolder.FullName)
                 }
             }
             else
             {
-                Write-Warning ("Current user '{0}' is same as target user '{1}'. Please execute this command with other user who have admin priviledge"-f $env:USERNAME, $user)
+                Write-Warning ("currentUserFolder '{0}' detected as null." -f $currentUserFolder.FullName)
             }
             
             # registry change
