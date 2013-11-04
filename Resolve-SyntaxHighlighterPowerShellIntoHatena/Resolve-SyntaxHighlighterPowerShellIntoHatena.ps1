@@ -27,12 +27,14 @@ function Resolve-SyntaxHighlighterPowerShellIntoHatena
 
     Process
     {
+        '<pre class="brush: powershell;">'
         $inputcode `
             -replace $leftSquareBrackets `
             -replace $rightSquareBrackets `
             -replace $leftAngleBrackets `
             -replace $rightAngleBrackets `
             -replace $colon
+        '</pre>'
     }
 }
 
