@@ -32,12 +32,12 @@
         } 
         elseif ($uac.$name -eq 0) 
         { 
-            Write-Verbose ("Registry path '{0}', name '{1}', value '{2}'" -f (Get-Item $path).name, $name, $uac)
+            Write-Verbose ("Registry path '{0}', name '{1}', value '{2}'" -f (Get-Item $path).name, $name, $uac.$name)
             "Disabled" 
         }
         else 
         {
-            Write-Verbose ("Registry path '{0}', name '{1}', value '{2}'" -f (Get-Item $path).name, $name, $uac)
+            Write-Verbose ("Registry path '{0}', name '{1}', value '{2}'" -f (Get-Item $path).name, $name, $uac.$name)
             "Unknown"
         }
     }
