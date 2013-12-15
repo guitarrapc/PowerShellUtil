@@ -1,16 +1,19 @@
 ﻿#Requires -Version 3.0
 
-function Set-PrinterPort
+function Set-PrinterPortExtend
 {
 <#
 .Synopsis
-   Set TCP/IP to PrinterName you specified.
+   Add/check TCP/IP and assign to PrinterName you specified.
 .DESCRIPTION
-   This Cmdlet will Assign current TCP/IP Port include what you specified.
+   This Cmdlet will check current TCP/IP Port include what you specified.
+   If not exist, then add TCP/IP Port.
+   Next, Get Printer Name as you desired and check Port Number which assigned to it.
+   If PortNumber assigned was not same as Port Number you specified, then change it.
 .EXAMPLE
-    Set-PrinterPort -TCPIPport 192.168.1.2 -printerName "HP-hogehoge"
+    Set-PrinterPort -TCPIPport 192.168.1.2 -printerName "HP*"   
 .EXAMPLE
-    Set-PrinterPort -TCPIPport 192.168.1.2 -printerName "HP-hogehoge" -Verbose
+    Set-PrinterPort -TCPIPport 192.168.1.2 -printerName "HP*" -Verbose
 #>
 
     [CmdletBinding()]
@@ -37,14 +40,26 @@ function Set-PrinterPort
     {
         if (-not(Get-PrinterPort | where Name -eq $TCPIPport))
         {
-            throw ("Printer Port '{0}' not found exception!" -f $TCPIPport)
+            if ($includeAddPort)
+            {
+                Write-Warning ("Printer port '{0}' not found. Adding port." -f $TCPIPport)
+                Add-PrinterPort -PrinterHostAddress $TCPIPport -Name $TCPIPport
+            }
+            else
+            {
+                throw ("Printer Port '{0}' not found exception!" -f $TCPIPport)
+            }
         }
         else
         {
             Write-Verbose ("Printer port '{0}' found." -f $TCPIPport)
+            if ($PSBoundParameters.Verbose.IsPresent)
+            {
+                Get-PrinterPort | where Name -eq $TCPIPport
+            }
         }
 
-        $printers = Get-CimInstance -Class Win32_printer | where name -eq $printerName
+        $printers = Get-CimInstance -Class Win32_printer | where name -like $printerName
 
         if ($printers.count -ne 0)
         {
