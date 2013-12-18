@@ -120,7 +120,7 @@ function Show-DynamicParamMulti
               options      = "bar"
               position     = 1})
 
-        $dynamicParamLists = New-ValentiaDynamicParamList -dynamicParams $parameters6
+        $dynamicParamLists = New-ValentiaDynamicParamList -dynamicParams $parameters
         New-ValentiaDynamicParamMulti -dynamicParamLists $dynamicParamLists
     }
 
@@ -135,4 +135,4 @@ function Show-DynamicParamMulti
 
 }
 
-Show-FreeMulti -hoge fuga -foo huge
+Show-DynamicParamMulti -hoge fuga -foo bar
