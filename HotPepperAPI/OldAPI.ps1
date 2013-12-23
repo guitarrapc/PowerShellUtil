@@ -10,7 +10,7 @@ if ($result.count -ne 0)
     # IE, Chrome, Opera
     $browsers = @("C:\Program Files\Internet Explorer\iexplore.exe",
                  "C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
-                 "C:\Program Files (x86)\Google\Opera\opera.exe")
+                 "C:\Program Files\Opera\opera.exe")
     $browser = $browsers.where({Test-Path $_},"last",1)
     & $browser $result.ShopUrl
 }
