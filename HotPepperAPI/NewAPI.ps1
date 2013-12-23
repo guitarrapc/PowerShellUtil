@@ -1,8 +1,9 @@
 ﻿# New API
 $key = "APIキーいれてね"
+$foodName = "寿司"
 $areaName = "新橋"
-$foodCode = (Invoke-RestMethod -Method Get "http://webservice.recruit.co.jp/hotpepper/food/v1/?key=$key").results.food | where name -eq "寿司" | select -ExpandProperty code
-$areaCode = (Invoke-RestMethod -Method Get "http://webservice.recruit.co.jp/hotpepper/small_area/v1/?key=$key&keyword=新橋").results.small_area | where name -eq "新橋" | select -ExpandProperty code
+$foodCode = (Invoke-RestMethod -Method Get "http://webservice.recruit.co.jp/hotpepper/food/v1/?key=$key").results.food | where name -eq $foodName | select -ExpandProperty code
+$areaCode = (Invoke-RestMethod -Method Get "http://webservice.recruit.co.jp/hotpepper/small_area/v1/?key=$key&keyword=$areaName").results.small_area | where name -eq $areaName | select -ExpandProperty code
 (Invoke-RestMethod -Method Get "http://webservice.recruit.co.jp/hotpepper/gourmet/v1/?key=$key&food=$foodCode&small_area=$areaCode").results.shop | Format-Table -Autosize | clip
 
 
