@@ -28,7 +28,7 @@ function Install-JapaneseUI
             position = 3)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $outputRunOnePs1 = "C:\Windows\Temp\SetupLang.ps1",
+        $outputRunOncePs1 = "C:\Windows\Temp\SetupLang.ps1",
 
         [parameter(
             mandatory = 1,
@@ -70,11 +70,11 @@ function Install-JapaneseUI
         Write-Verbose ("Installing JP Language Pack from '{0}'" -f $winTemp)
         Add-WindowsPackage -Online -PackagePath (Join-Path $wintemp $lpfile -Resolve)
 
-        Wirte-Verbose ("Output runonce cmd to execute PowerShell as '{0}'" -f $outputRunOnePath)
-        $runOnceCmdlet | Out-File -FilePath $outputRunOnecePs1 -Encoding ascii
+        Write-Verbose ("Output runonce cmd to execute PowerShell as '{0}'" -f $outputRunOncePs1)
+        $runOnceCmdlet | Out-File -FilePath $outputRunOncePs1 -Encoding ascii
 
         Write-Verbose ("Set Runonce registry")
-        Set-ItemProperty -Path $RunOncePath -Name "SetupLang" -Value "powershell.exe -ExecutionPolicy RemoteSigned -file $outputRunOnecePs1"
+        Set-ItemProperty -Path $RunOncePath -Name "SetupLang" -Value "powershell.exe -ExecutionPolicy RemoteSigned -file $outputRunOncePs1"
 
         # Set Japanese Keyboard : English - LayerDriver JPN : kbd101.dll
         Set-ItemProperty 'registry::HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\i8042prt\Parameters' -Name 'LayerDriver JPN' -Value 'kbd106.dll'
