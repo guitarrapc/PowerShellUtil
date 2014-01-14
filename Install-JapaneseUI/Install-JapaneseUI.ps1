@@ -80,7 +80,7 @@ function Install-JapaneseUI
         Set-WinUserLanguageList ja-jp,en-US -Force
 
         # Set Japanese LanguagePack
-        Write-Verbose ("Downloading JP Language Pack from '{0}' to '{1}'" -f $lpUrl, $winTemp)
+        Write-Verbose ("Downloading JP Language Pack from '{0}' to '{1}'" -f $languagePackURI, $winTemp)
         Start-BitsTransfer -Source $languagePackURI -Destination $winTemp
 
         Write-Verbose ("Installing JP Language Pack from '{0}'" -f $winTemp)
