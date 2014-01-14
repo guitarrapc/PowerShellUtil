@@ -51,6 +51,7 @@ function Install-JapaneseUI
             Set-WinUILanguageOverride ja-JP;
             Set-WinHomeLocation 122;
             Set-WinUserLanguageList -LanguageList ja-jp -Force
+            Set-WinSystemLocal ja-JP
             Set-ItemProperty -Path '$autoLogonPath' -Name 'AutoAdminLogon' -Value '0'
             Remove-ItemProperty -Path '$autoLogonPath' -Name 'DefaultUserName'
             Remove-ItemProperty -Path '$autoLogonPath' -Name 'DefaultPassword'
