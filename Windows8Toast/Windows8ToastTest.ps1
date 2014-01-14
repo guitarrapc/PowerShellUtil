@@ -18,6 +18,12 @@ for ($i = 0; $i -lt $stringElements.Count; $i++)
     $stringElements[$i].AppendChild($toastXml.CreateTextNode("Line " + $i)) > $null
 }
 
+<#
+# こっちもあり
+$stringElements = $toastXml.GetElementsByTagName("text") | select -First 1
+$stringElements.AppendChild($toastXml.CreateTextNode("Test Toast Notification")) > $null
+#>
+
 # no image
 $imageElements = $toastXml.GetElementsByTagName("image")
 $imageElements[0].src = "file:///" + ""
