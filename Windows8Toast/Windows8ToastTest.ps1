@@ -10,6 +10,12 @@ Add-Type -Path .\Microsoft.WindowsAPICodePack.Shell.dll
 # create toast template TO xml
 [Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null
 [xml]$toastXml =  ([Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent([Windows.UI.Notifications.ToastTemplateType]::ToastImageAndText04)).GetXml()
+<#
+# これでもいいが template type の違いに注意
+[Windows.UI.Notifications.ToastNotificationManager, Windows.UI.Notifications, ContentType = WindowsRuntime] > $null
+$toastTemplate = [Windows.UI.Notifications.ToastTemplateType]::ToastImageAndText01
+[xml]$toastXml =  [Windows.UI.Notifications.ToastNotificationManager]::GetTemplateContent($toastTemplate).GetXml()
+#>
 
 # message to show on toast
 $stringElements = $toastXml.GetElementsByTagName("text")
