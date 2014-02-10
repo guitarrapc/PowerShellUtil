@@ -65,7 +65,6 @@ function Install-JapaneseUI
         $runOnceCmdlet = "
             Set-WinUILanguageOverride ja-JP;                                          # Change Windows UI to Japanese
             Set-WinHomeLocation 122;                                                  # Change Region to Japan
-            Set-WinUserLanguageList -LanguageList ja-jp -Force                        # Language List to change Primary as Japanese
             Set-WinSystemLocal ja-JP                                                  # Set Non-Unicode Program Language to Japanese
             Set-ItemProperty -Path '$autoLogonPath' -Name 'AutoAdminLogon' -Value '0' # Disable AutoAdminLogon
             Remove-ItemProperty -Path '$autoLogonPath' -Name 'DefaultUserName'        # Remove UserName
