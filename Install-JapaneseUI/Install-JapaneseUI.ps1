@@ -39,6 +39,7 @@ function Install-JapaneseUI
     begin
     {
         $ErrorActionPreference = "Stop"
+        $confirm = !$force
 
         # Set Language Pack URI
         switch ($targetOSVersion)
@@ -101,7 +102,7 @@ function Install-JapaneseUI
 
         # Restart
         Write-Verbose ("Restart Computer, Make sure Login to")
-        Restart-Computer -Confirm -Force:$force
+        Restart-Computer -Confirm:$confirm -Force:$force
     }
 }
 
