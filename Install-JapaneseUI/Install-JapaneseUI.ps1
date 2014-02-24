@@ -78,7 +78,7 @@ function Install-JapaneseUI
         # Japanese UI
         Write-Verbose "Change Win User Language as ja-JP, en-US"
         Set-WinUserLanguageList ja-jp,en-US -Force
-        Set-WinSystemLocal ja-JP
+        Set-WinSystemLocale ja-JP
 
         # Set Japanese LanguagePack
         Write-Verbose ("Downloading JP Language Pack from '{0}' to '{1}'" -f $languagePackURI, $winTemp)
