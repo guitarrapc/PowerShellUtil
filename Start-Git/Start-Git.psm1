@@ -48,17 +48,7 @@ function Start-Git{
             ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $LogName,
-
-        [Parameter(
-            HelpMessage = "Git Commit Comment",
-            Position = 3,
-            Mandatory = $false,
-            ValueFromPipeline = $true,
-            ValueFromPipelineByPropertyName = $true)]
-        [ValidateNotNullOrEmpty()]
-        [string]
-        $GitCommitComment
+        $LogName
     )
 
     Begin
@@ -69,9 +59,6 @@ function Start-Git{
         {
             New-Item -ItemType Directory -Path $LogPath
         }
-
-        # configure log file and fullpath
-        $date = (Get-Date).ToString("yyyyMMdd")
         $logFullPath = Join-Path $LogPath $logName
     }
 
@@ -82,19 +69,20 @@ function Start-Git{
             Push-Location $path
 
 
-            "{0} : Current Repository is '{1}'" -f (Get-Date), (Split-Path $Path -Leaf) | Set-Content -PassThru -Path $logFullPath -Force
+            "{0} : Current Repository is '{1}'" -f (Get-Date), (Split-Path $path -Leaf) | Set-Content -PassThru -Path $logFullPath -Force
             try
             {
-                git pull | Set-Content -PassThru -Path $logFullPath -Force
+                git pull | Add-Content -PassThru -Path $logFullPath -Force
             }
             catch
             {
                  $_ | Add-Content -PassThru -Path $logFullPath -Force
             }
-
-            [System.Environment]::NewLine | Add-Content -PassThru -Path $logFullPath -Force
-
-            Pop-Location
+            finally
+            {
+                [System.Environment]::NewLine | Add-Content -PassThru -Path $logFullPath -Force
+                Pop-Location
+            }
         }
     }
 }
