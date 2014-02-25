@@ -82,7 +82,7 @@ function Start-Git{
             Push-Location $path
 
 
-            "{0} : Current Repository is '{1}'" -f (Get-Date), (Split-Path $GitPath -Leaf) | Set-Content -PassThru -Path $logFullPath -Force
+            "{0} : Current Repository is '{1}'" -f (Get-Date), (Split-Path $Path -Leaf) | Set-Content -PassThru -Path $logFullPath -Force
             try
             {
                 git pull | Set-Content -PassThru -Path $logFullPath -Force
