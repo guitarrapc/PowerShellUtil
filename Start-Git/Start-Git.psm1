@@ -9,13 +9,7 @@
 #
 #  - Sync image files with git with following commands
 #
-#   1. git add -A
-#      : will upload any changed file in local
-#
-#   2. git commit -a -m "hogemoge"
-#      : will commit change in local with remote repositoty and message for "hogemoge"       
-#
-#   3. git pull
+#   1. git pull
 #      : pull latest file from remote repository
 #
 # --------------------------------
@@ -25,52 +19,43 @@ function Start-Git{
     [CmdletBinding(  
         SupportsShouldProcess = $false,
         ConfirmImpact = "none",
-        DefaultParameterSetName = ""
-    )]
+        DefaultParameterSetName = "")]
     param
     (
         [Parameter(
-        HelpMessage = "Input Full path of Git",
-        Position = 0,
-        Mandatory = $true,
-        ValueFromPipeline = $true,
-        ValueFromPipelineByPropertyName = $true
-        )]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript({Test-Path $_.FullName})]
-        [IO.FileInfo[]]
+            HelpMessage = "Input Full path of Git",
+            Position = 0,
+            Mandatory = $true,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [string[]]
         $GitPath,
  
         [Parameter(
-        HelpMessage = "Input path of Log",
-        Position = 1,
-        Mandatory = $false,
-        ValueFromPipeline = $true,
-        ValueFromPipelineByPropertyName = $true
-        )]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript({Test-Path $_.FullName})]
-        [IO.FileInfo[]]
+            HelpMessage = "Input path of Log",
+            Position = 1,
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true)]
+        [string]
         $LogPath,
 
         [Parameter(
-        HelpMessage = "Input name of Log",
-        Position = 2,
-        Mandatory = $false,
-        ValueFromPipeline = $true,
-        ValueFromPipelineByPropertyName = $true
-        )]
+            HelpMessage = "Input name of Log",
+            Position = 2,
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $LogName,
 
         [Parameter(
-        HelpMessage = "Git Commit Comment",
-        Position = 3,
-        Mandatory = $false,
-        ValueFromPipeline = $true,
-        ValueFromPipelineByPropertyName = $true
-        )]
+            HelpMessage = "Git Commit Comment",
+            Position = 3,
+            Mandatory = $false,
+            ValueFromPipeline = $true,
+            ValueFromPipelineByPropertyName = $true)]
         [ValidateNotNullOrEmpty()]
         [string]
         $GitCommitComment
@@ -78,27 +63,39 @@ function Start-Git{
 
     Begin
     {
-        # Set current directory to git direcotry (same as cd)
-        Set-Location $GitPath
 
         # Check for git directory
-        if (!(Test-Path $logDir))
+        if (!(Test-Path $LogPath))
         {
-            New-Item -ItemType Directory -Path $logDir
+            New-Item -ItemType Directory -Path $LogPath
         }
 
         # configure log file and fullpath
         $date = (Get-Date).ToString("yyyyMMdd")
-        $logName = "git_$date.log"
-        $logFullPath = Join-Path $logDir $logName
-
+        $logFullPath = Join-Path $LogPath $logName
     }
 
     process
     {
-        git add -A >> $logFullPath 2>&1
-        git commit -a -m $GitCommitComment >> $logFullPath 2>&1
-        git pull >> $logFullPath 2>&1
+        foreach ($path in $GitPath)
+        {
+            Push-Location $path
+
+
+            "{0} : Current Repository is '{1}'" -f (Get-Date), (Split-Path $GitPath -Leaf) | Set-Content -PassThru -Path $logFullPath -Force
+            try
+            {
+                git pull | Set-Content -PassThru -Path $logFullPath -Force
+            }
+            catch
+            {
+                 $_ | Add-Content -PassThru -Path $logFullPath -Force
+            }
+
+            [System.Environment]::NewLine | Add-Content -PassThru -Path $logFullPath -Force
+
+            Pop-Location
+        }
     }
 }
 
