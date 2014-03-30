@@ -5,7 +5,6 @@
         [parameter(
             Position  = 0,
             Mandatory = 0,
-            ValueFromPipeline = 1,
             ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
         [string]
@@ -14,14 +13,16 @@
         #screenshot_[yyyyMMdd_HHmmss_ffff].png
         [parameter(
             Position  = 1,
-            Mandatory = 0)]
+            Mandatory = 0,
+            ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $FileNamePattern = "screenshot_{0}.png",
+        $FileNamePattern = 'screenshot_{0}.png',
 
         [parameter(
             Position  = 2,
             Mandatory = 0,
+            ValueFromPipeline = 1,
             ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
         [int]
@@ -38,7 +39,7 @@
 
      begin
      {
-        $ErrorActionPreference = "Stop"
+        $ErrorActionPreference = 'Stop'
         Add-Type -AssemblyName System.Windows.Forms
 
         if (-not (Test-Path $OutPath))
@@ -49,18 +50,20 @@
 
      process
      {
-        foreach ($repeat in $RepeatTimes)
-        {
-            $fileName = $FileNamePattern -f (Get-Date).ToString("yyyyMMdd")
-            $b = New-Object System.Drawing.Bitmap([System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width,[System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height)
+        1..$RepeatTimes `
+        | %{
+            $fileName = $FileNamePattern -f (Get-Date).ToString('yyyyMMdd_HHmmss_ffff')
+            $path = Join-Path $OutPath $fileName
+
+            $b = New-Object System.Drawing.Bitmap([System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Width, [System.Windows.Forms.Screen]::PrimaryScreen.Bounds.Height)
             $g = [System.Drawing.Graphics]::FromImage($b)
-            $g.CopyFromScreen((New-Object System.Drawing.Point(0,0)),(New-Object System.Drawing.Point(0,0)),$b.Size)
+            $g.CopyFromScreen((New-Object System.Drawing.Point(0,0)), (New-Object System.Drawing.Point(0,0)), $b.Size)
             $g.Dispose()
-            $b.Save((Join-Path $OutPath $fileName))
+            $b.Save($path)
 
             if ($RepeatTimes -ne 0)
             {
-                Sleep -Milliseconds $DurationMs
+                Start-Sleep -Milliseconds $DurationMs
             }
         }
     }
