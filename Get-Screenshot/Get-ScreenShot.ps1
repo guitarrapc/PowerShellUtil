@@ -11,7 +11,7 @@
         [string]
         $OutPath = "$env:USERPROFILE\Documents\ScreenShot",
 
-        #screenshot_[yyyyMMdd_HHmmss]_[No].png
+        #screenshot_[yyyyMMdd_HHmmss_ffff].png
         [parameter(
             Position  = 1,
             Mandatory = 0)]
@@ -31,7 +31,6 @@
             Position  = 3,
             Mandatory = 0,
             ValueFromPipelinebyPropertyName = 1)]
-        
         [ValidateNotNullOrEmpty()]
         [int]
         $DurationMs = 1
@@ -66,4 +65,3 @@
         }
     }
 }
-    
