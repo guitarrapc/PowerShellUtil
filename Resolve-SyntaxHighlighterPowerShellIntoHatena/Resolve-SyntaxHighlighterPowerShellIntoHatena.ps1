@@ -18,11 +18,13 @@ function Resolve-SyntaxHighlighterPowerShellIntoHatena
 
     Begin
     {
-        $leftSquareBrackets = @("\[","&#91;")
-        $rightSquareBrackets = @("\]","&#93;")
-        $leftAngleBrackets = @("<","&lt;")
-        $rightAngleBrackets = @(">","&gt;")
-        $colon = @(":","&#58;")
+        $leftSquareBrackets  = @('\[','&#91;')
+        $rightSquareBrackets = @('\]','&#93;')
+        $leftAngleBrackets   = @('<','&lt;')
+        $rightAngleBrackets  = @('>','&gt;')
+        $leftBlanckets       = @('\(','&#40')
+        $rightBlanckets      = @('\)','&#41')
+        $colon               = @(':','&#58;')
     }
 
     Process
@@ -33,11 +35,12 @@ function Resolve-SyntaxHighlighterPowerShellIntoHatena
             -replace $rightSquareBrackets `
             -replace $leftAngleBrackets `
             -replace $rightAngleBrackets `
+            -replace $leftBlanckets `
+            -replace $rightBlanckets `
             -replace $colon
         '</pre>'
     }
 }
-
 <#
 #### Sample
 $inputcode = @'
