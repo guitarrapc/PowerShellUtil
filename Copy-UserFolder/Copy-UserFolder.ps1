@@ -12,6 +12,8 @@
         $TargetUserName
     )
 
+    Show-Caution
+
     $SourceUserName, $TargetUserName `
     | %{
         Write-Host ("Starting backup SourceUserName '{0}'" -f $_) -ForegroundColor Cyan
@@ -312,7 +314,7 @@ function Show-ValentiaPromptForChoice
 
 function Show-Caution
 {
-    $answer = Show-ValentiaPromptForChoice -questions ("はい","いいえ") -title "ActiveDirectryに参加します。事前に起動していて保存していないプログラムをすべて保存して閉じてください。" -message "未保存のファイルはすべて保存しましたか？Active Directory に参加します"
+    $answer = Show-ValentiaPromptForChoice -questions ("はい","いいえ") -title "ユーザーフォルダをコピーします。影響しそうなプログラムは閉じておきましょう。。" -message "未保存のファイルはすべて保存しましたか？実行しますよ。"
 
     if ($answer -eq "はい")
     {
