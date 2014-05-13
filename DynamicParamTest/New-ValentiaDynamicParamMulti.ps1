@@ -387,7 +387,8 @@ function Show-DynamicParamMulti
               validateSet  = $false}
         )
 
-        New-DynamicParamMulti -dynamicParams $dynamicParams
+        $dynamic = New-DynamicParamMulti -dynamicParams $dynamicParams
+        return $dynamic
     }
 
     begin
