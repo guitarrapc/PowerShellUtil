@@ -13,21 +13,40 @@ You can use this cmdlet to define Dynamic Param
 function Show-DynamicParamMulti
 {
     [CmdletBinding()]
-    param()
+    param(
+        [parameter(position = 6)]
+        $nyao
+    )
     
     dynamicParam
     {
-        $parameters = (
-            @{name         = "hoge"
-              options      = "fuga"
+        $dynamicParams = (
+            @{Mandatory    = $true
+              name         = "hoge"
+              Options      = "hoge","piyo"
+              position     = 0
+              Type         = "System.String[]"
               validateSet  = $true
-              position     = 0},
+              valueFromPipelineByPropertyName = $true},
+              
+              @{Mandatory    = $true
+              name         = "foo"
+              Options      = 1,2,3,4,5
+              position     = 1
+              Type         = "System.Int32[]"
+              validateSet  = $true},
 
-            @{name         = "foo"
-              options      = "bar"
-              position     = 1})
+              @{DefaultValue = (4,2,5)
+              Mandatory    = $false
+              name         = "bar"
+              Options      = 1,2,3,4,5
+              position     = 2
+              Type         = "System.Int32[]"
+              validateSet  = $false}
+        )
 
-        New-NewRelicDynamicParamMulti -dynamicParams $parameters
+        $dynamic = New-DynamicParamMulti -dynamicParams $dynamicParams
+        return $dynamic
     }
 
     begin
@@ -37,12 +56,26 @@ function Show-DynamicParamMulti
     {
         $PSBoundParameters.hoge
         $PSBoundParameters.foo
+        if ($PSBoundParameters.ContainsKey('bar'))
+        {
+            $PSBoundParameters.bar
+            $PSBoundParameters.bar.GetType().FullName
+        }
+        else
+        {
+            $bar = $dynamic.bar.Value
+            $bar
+            $bar.GetType().FullName
+        }
     }
-
 }
 
-Show-DynamicParamMulti -hoge fuga -foo bar
+"Test 1 ---------------------"
+Show-DynamicParamMulti -hoge hoge -foo 1,2,3,4
+"Test 2 ---------------------"
+Show-DynamicParamMulti -hoge piyo -foo 2 -bar 2
 #>
+
 function New-DynamicParamMulti
 {
     [CmdletBinding()]
@@ -322,7 +355,10 @@ function Sort-DynamicParamHashTable
 function Show-DynamicParamMulti
 {
     [CmdletBinding()]
-    param()
+    param(
+        [parameter(position = 6)]
+        $nyao
+    )
     
     dynamicParam
     {
@@ -351,8 +387,7 @@ function Show-DynamicParamMulti
               validateSet  = $false}
         )
 
-        $dynamic = New-DynamicParamMulti -dynamicParams $dynamicParams -Verbose
-        return $dynamic
+        New-DynamicParamMulti -dynamicParams $dynamicParams
     }
 
     begin
@@ -374,7 +409,6 @@ function Show-DynamicParamMulti
             $bar.GetType().FullName
         }
     }
-
 }
 
 "Test 1 ---------------------"
