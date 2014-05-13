@@ -98,13 +98,25 @@ function New-DynamicParamMulti
             }
 
             # Set default type or get from dynamicparam
+            # Priority
+            # 1. Type KV
+            # 2. Type of DefaultValue
+            # 3. System.Object[]
             if ($dynamicParamList.type)
             {
                 $type = [Type]::GetType($dynamicParamList.Type)
             }
             else
             {
-                $type = [Type]::GetType("System.String[]")
+                if ($dynamicParamList.defaultValue)
+                {
+                    $DefaultValueType = $dynamicParamList.defaultValue.GetType().FullName
+                    $type = [Type]::GetType($DefaultValueType)
+                }
+                else
+                {
+                    $type = [Type]::GetType("System.Object[]")
+                }
             }
 
             if ($null -eq $type)
@@ -114,6 +126,34 @@ function New-DynamicParamMulti
 
             # create RuntimeDefinedParameter
             $runtimeDefinedParameter = New-Object -TypeName System.Management.Automation.RuntimeDefinedParameter @($dynamicParamList.name, $type, $attributesCollection)
+
+            # Set Default Value if passed
+            if ($dynamicParamList.defaultValue)
+            {
+                if ($dynamicParamList.defaultValue -is $type)
+                {
+                    $runtimeDefinedParameter.Value = $dynamicParamList.defaultValue
+                }
+                elseif ($dynamicParamList.defaultValue -as $type)
+                {
+                    Write-Verbose ("Convert Type for ParameterName '{0}'. DefaultValue '{1}' convert from '{2}' to '{3}'" `
+                        -f 
+                            $dynamicParamList.name,
+                            $dynamicParamLists.defaultValue,
+                            $dynamicParamList.defaultValue.GetType().FullName,
+                            $type)
+                    $runtimeDefinedParameter.Value = $dynamicParamList.defaultValue -as $type
+                }
+                else
+                {
+                    throw "Cannot convert Type for ParameterName '{0}'. DefaultValue '{1}' could not convert from '{2}' to '{3}'" `
+                        -f 
+                            $dynamicParamList.name,
+                            $dynamicParamLists.defaultValue,
+                            $dynamicParamList.defaultValue.GetType().FullName,
+                            $type
+                }
+            }
 
             # create Dictionary
             $dictionary.Add($dynamicParamList.name, $runtimeDefinedParameter)
@@ -155,7 +195,7 @@ function New-DynamicParamList
         $list = New-Object System.Collections.Generic.List[HashTable]
 
         # create key check array
-        [string[]]$keyCheckInputItems = "helpMessage", "mandatory", "name", "parameterSetName", "options", "position", "valueFromPipeline", "valueFromPipelineByPropertyName", "valueFromRemainingArguments", "validateSet", "Type"
+        [string[]]$keyCheckInputItems = "helpMessage", "mandatory", "name", "parameterSetName", "options", "position", "valueFromPipeline", "valueFromPipelineByPropertyName", "valueFromRemainingArguments", "validateSet", "Type", "DefaultValue"
 
         $keyCheckList = New-Object System.Collections.Generic.List[String]
         $keyCheckList.AddRange($keyCheckInputItems)
@@ -286,10 +326,10 @@ function Show-DynamicParamMulti
     
     dynamicParam
     {
-        $parameters = (
+        $dynamicParams = (
             @{Mandatory    = $true
               name         = "hoge"
-              Options      = "fuga","piyo"
+              Options      = "hoge","piyo"
               position     = 0
               Type         = "System.String[]"
               validateSet  = $true
@@ -300,10 +340,19 @@ function Show-DynamicParamMulti
               Options      = 1,2,3,4,5
               position     = 1
               Type         = "System.Int32[]"
-              validateSet  = $true}
+              validateSet  = $true},
+
+              @{DefaultValue = (4,2,5)
+              Mandatory    = $false
+              name         = "bar"
+              Options      = 1,2,3,4,5
+              position     = 2
+              Type         = "System.Int32[]"
+              validateSet  = $false}
         )
 
-        New-DynamicParamMulti -dynamicParams $parameters
+        $dynamic = New-DynamicParamMulti -dynamicParams $dynamicParams -Verbose
+        return $dynamic
     }
 
     begin
@@ -313,8 +362,22 @@ function Show-DynamicParamMulti
     {
         $PSBoundParameters.hoge
         $PSBoundParameters.foo
+        if ($PSBoundParameters.ContainsKey('bar'))
+        {
+            $PSBoundParameters.bar
+            $PSBoundParameters.bar.GetType().FullName
+        }
+        else
+        {
+            $bar = $dynamic.bar.Value
+            $bar
+            $bar.GetType().FullName
+        }
     }
 
 }
 
-Show-DynamicParamMulti -hoge fuga -foo 1,2,3,4
+"Test 1 ---------------------"
+Show-DynamicParamMulti -hoge hoge -foo 1,2,3,4
+"Test 2 ---------------------"
+Show-DynamicParamMulti -hoge piyo -foo 2 -bar 2
