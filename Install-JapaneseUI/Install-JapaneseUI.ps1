@@ -21,7 +21,7 @@ function Install-JapaneseUI
             position = 2)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $outputRunOncePs1 = "C:\Windows\Temp\SetupLang.ps1",
+        $outputRunOncePs1 = "$env:LOCALAPPDATA\Temp\SetupLang.ps1",
 
         [parameter(
             mandatory = 1,
