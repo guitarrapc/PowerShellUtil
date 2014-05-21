@@ -14,7 +14,7 @@ function Install-JapaneseUI
             position = 1)]
         [ValidateNotNullOrEmpty()]
         [string]
-        $winTemp = "C:\Windows\Temp",
+        $Temp = "$env:LOCALAPPDATA\Temp",
 
         [parameter(
             mandatory = 0,
@@ -80,12 +80,15 @@ function Install-JapaneseUI
         Set-WinUserLanguageList ja-jp,en-US -Force
         Set-WinSystemLocale ja-JP
 
-        # Set Japanese LanguagePack
-        Write-Verbose ("Downloading JP Language Pack from '{0}' to '{1}'" -f $languagePackURI, $winTemp)
-        Start-BitsTransfer -Source $languagePackURI -Destination $winTemp
+        # Package Path
+        $PackagePath = Join-Path $Temp $lpfile
 
-        Write-Verbose ("Installing JP Language Pack from '{0}'" -f $winTemp)
-        Add-WindowsPackage -Online -PackagePath (Join-Path $wintemp $lpfile -Resolve)
+        # Set Japanese LanguagePack
+        Write-Verbose ("Downloading JP Language Pack from '{0}' to '{1}'" -f $languagePackURI, $PackagePath)
+        (New-Object Net.Webclient).DownloadFile($languagePackURI, $PackagePath)
+
+        Write-Verbose ("Installing JP Language Pack from '{0}'" -f $PackagePath)
+        Add-WindowsPackage -Online -PackagePath $PackagePath
 
         Write-Verbose ("Output runonce cmd to execute PowerShell as '{0}'" -f $outputRunOncePs1)
         $runOnceCmdlet | Out-File -FilePath $outputRunOncePs1 -Encoding ascii
@@ -107,7 +110,7 @@ function Install-JapaneseUI
     }
 }
 
-# Windows Server 2012 R2 will be ......
+# Windows Server 2012 will be ......
 #Install-JapaneseUI -targetOSVersion Windows2012 -credential $(Get-Credential -Message "Input Administrator User and Password." -UserName Administrator) -Verbose
 # Auto Restart with -force switch
 #Install-JapaneseUI -targetOSVersion Windows2012 -credential $(Get-Credential -Message "Input Administrator User and Password." -UserName Administrator) -Verbose -force
