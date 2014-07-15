@@ -31,7 +31,7 @@
                 DisplayName    = $_.DisplayName
                 DisplayVersion = $_.DisplayVersion
                 Publisher      = $_.Publisher
-                InstallDate    = [DateTime]::ParseExact($_.InstallDate,"yyyyMMdd",$null)
+                InstallDate    = $_ | where {$_.InstallDate} | %{[DateTime]::ParseExact($_.InstallDate,"yyyyMMdd",$null)}
                 ProductId      = $_.PSChildName | %{$_ -replace "{" -replace "}"}
             }
             $list.Add($obj)
@@ -43,5 +43,3 @@
         $list
     }
 }
-
-Get-ProductId
