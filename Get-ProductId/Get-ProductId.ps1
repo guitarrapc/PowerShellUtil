@@ -8,38 +8,43 @@
             Position  = 1,
             ValueFromPipeline = 1,
             ValueFromPipelineByPropertyName =1)]
-        [string]
+        [ValidateNotNullOrEmpty()]
+        [string[]]
         $path = "registry::HKLM\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
     )
 
     begin
     {
-        if (!(Test-Path $path))
-        {
-            throw "path '{0}' not found Exception!!" -f $_
-        }
-
         $list = New-Object 'System.Collections.Generic.List[PSCustomObject]'
     }
 
     process
     {
-        $reg = Get-ItemProperty -Path $path | where DisplayName
-        $reg `
+        $path `
         | %{
-            $obj = [PSCustomObject]@{
-                DisplayName    = $_.DisplayName
-                DisplayVersion = $_.DisplayVersion
-                Publisher      = $_.Publisher
-                InstallDate    = $_ | where {$_.InstallDate} | %{[DateTime]::ParseExact($_.InstallDate,"yyyyMMdd",$null)}
-                ProductId      = $_.PSChildName | %{$_ -replace "{" -replace "}"}
+            # validation
+            if (!(Test-Path $_))
+            {
+                throw "path '{0}' not found Exception!!" -f $_
             }
-            $list.Add($obj)
+
+            $reg = Get-ItemProperty -Path $_ | where DisplayName
+            $reg `
+            | %{
+                $obj = [PSCustomObject]@{
+                    DisplayName    = $_.DisplayName
+                    DisplayVersion = $_.DisplayVersion
+                    Publisher      = $_.Publisher
+                    InstallDate    = $_ | where {$_.InstallDate} | %{[DateTime]::ParseExact($_.InstallDate,"yyyyMMdd",$null)}
+                    ProductId      = $_.PSChildName | %{$_ -replace "{" -replace "}"}
+                }
+                $list.Add($obj)
+            }
         }
     }
 
     end
     {
-        $list
+        $list | sort DisplayName
     }
 }
