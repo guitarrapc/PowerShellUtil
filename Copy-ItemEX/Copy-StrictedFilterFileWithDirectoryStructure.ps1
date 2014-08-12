@@ -23,7 +23,7 @@
             position  = 2,
             ValueFromPipelineByPropertyName = 1)]
         [string[]]
-        $Filters,
+        $Targets,
  
         [parameter(
             mandatory = 0,
@@ -37,14 +37,13 @@
     {
         $list = New-Object 'System.Collections.Generic.List[String]'
     }
-
+ 
     process
     {
-        Foreach ($f in $Filters)
+        Foreach ($target in $Targets)
         {
             # Copy "All Directory Structure" and "File" which Extension type is $ex
-            $filter = "*{0}" -f $f
-            Copy-Item -Path $Path -Destination $Destination -Force -Recurse -Filter $filter
+            Copy-Item -Path $Path -Destination $Destination -Force -Recurse -Filter $target
         }
     }
  
@@ -71,18 +70,18 @@
             $result | %{$list.Add($_)}
         }
         $folderToKeep = $list | sort -Unique
-
+ 
         # Remove All Empty (none file exist) folders
         Get-ChildItem -Path $Destination -Recurse -Directory | where fullName -notin $folderToKeep | Remove-Item -Recurse
     }
 }
 
 <#
-Copy-StrictedFilterFileWithDirectoryStructure -Path c:\valentia -Destination C:\hoge -Filters *.bat, *.md -Exclude Readme_J.md
+Copy-StrictedFilterFileWithDirectoryStructure -Path c:\valentia -Destination C:\hoge -Targets *.bat, *.md -Exclude Readme_J.md
  
 # Sample
-Copy-StrictedFilterFileWithDirectoryStructure -Path C:\valentia -Destination C:\hoge -Extension .bat, .md
+Copy-StrictedFilterFileWithDirectoryStructure -Path C:\valentia -Destination C:\hoge -Targets .bat, .md
  
 # Sample : -Exlude item will not exit in copied folder
-Copy-StrictedFilterFileWithDirectoryStructure -Path C:\valentia -Destination C:\hoge -Filters *.bat, *.md -Excludes Readme*.md
+Copy-StrictedFilterFileWithDirectoryStructure -Path C:\valentia -Destination C:\hoge -Targets *.bat, *.md -Excludes Readme*.md
 #>
