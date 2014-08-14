@@ -42,21 +42,34 @@
             Mandatory = 0,
             Position  = 5)]
         [switch]
-        $Force
+        $Force,
+
+        [parameter(
+            Mandatory = 0,
+            Position  = 6)]
+        [switch]
+        $WhatIf
     )
 
     process
     {
-        # Get Filtered Path (if none filter)
+        # Get Filter Item Path as List<Tuple<string>,<string>,<string>>
         $filterPath = GetTargetsFiles -Path $Path -Targets $Targets -Recurse:$isRecurse -Force:$Force
+
+        # Remove Exclude Item from Filter Item
         $excludePath = GetExcludeFiles -Path $filterPath -Excludes $Excludes
-        CopyItemEX  -Path $excludePath -RootPath $Path -Destination $Destination -Force:$isForce
+
+        # Execute Copy, confirmation and WhatIf can be use.
+        CopyItemEX  -Path $excludePath -RootPath $Path -Destination $Destination -Force:$isForce -WhatIf:$isWhatIf
     }
 
     begin
     {
         $isRecurse = $PSBoundParameters.ContainsKey('Recurse')
         $isForce = $PSBoundParameters.ContainsKey('Force')
+        $isWhatIf = $PSBoundParameters.ContainsKey('WhatIf')
+
+        if (-not (Test-Path $Path)){throw 'Path not found Exception!!'}
 
         function GetTargetsFiles
         {
@@ -89,11 +102,11 @@
                     | %{
                         if ($_ -is [System.IO.FileInfo])
                         {
-                            $tuple = New-Object "System.Tuple[[string], [string], [string]]" ($_.FullName, $_.DirectoryName, $_.Name)
+                            $tuple = New-Object 'System.Tuple[[string], [string], [string]]' ($_.FullName, $_.DirectoryName, $_.Name)
                         }
                         elseif ($_ -is [System.IO.DirectoryInfo])
                         {
-                            $tuple = New-Object "System.Tuple[[string], [string], [string]]" ($_.FullName, $_.PSParentPath, $_.Name)
+                            $tuple = New-Object 'System.Tuple[[string], [string], [string]]' ($_.FullName, $_.PSParentPath, $_.Name)
                         }
                         else
                         {
@@ -109,11 +122,11 @@
                 | %{
                     if ($_ -is [System.IO.FileInfo])
                     {
-                        $tuple = New-Object "System.Tuple[[string], [string], [string]]" ($_.FullName, $_.DirectoryName, $_.Name)
+                        $tuple = New-Object 'System.Tuple[[string], [string], [string]]' ($_.FullName, $_.DirectoryName, $_.Name)
                     }
                     elseif ($_ -is [System.IO.DirectoryInfo])
                     {
-                        $tuple = New-Object "System.Tuple[[string], [string], [string]]" ($_.FullName, $_.PSParentPath, $_.Name)
+                        $tuple = New-Object 'System.Tuple[[string], [string], [string]]' ($_.FullName, $_.PSParentPath, $_.Name)
                     }
                     else
                     {
@@ -176,7 +189,7 @@
             $PSBoundParameters.Remove('Force') > $null
 
             # convert to regex format
-            $root = $RootPath.Replace("\", "\\")
+            $root = $RootPath.Replace('\', '\\')
 
             $Path `
             | %{
@@ -187,7 +200,7 @@
                     DirectoryName = $directoryName
                     Destination = Join-Path $directoryName $_.Item3
                 }} `
-            | where {$Force -or $PSCmdlet.ShouldProcess($_.Path, ("Copy Item to {0}" -f $_.Destination))} `
+            | where {$Force -or $PSCmdlet.ShouldProcess($_.Path, ('Copy Item to {0}' -f $_.Destination))} `
             | %{
                 Write-Verbose ("Copying '{0}' to '{1}'." -f $_.Path, $_.Destination)
                 New-Item -Path $_.DirectoryName -ItemType Directory -Force > $null
@@ -197,4 +210,7 @@
     }
 }
 
-# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose 
+# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose       # Verbosing progress
+# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -WhatIf        # Copy not execute only WhatIf message show up
+# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Force         # Force ls and cp
+# Copy-ItemEX -Path D:\gehogemogehoge -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose # Exception if Path not found
