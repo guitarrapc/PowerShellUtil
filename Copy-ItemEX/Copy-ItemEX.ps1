@@ -7,6 +7,7 @@
             Position  = 0,
             ValueFromPipeline = 1,
             ValueFromPipelineByPropertyName =1)]
+        [alias('PSParentPath')]
         [string]
         $Path,
 
@@ -53,6 +54,9 @@
 
     process
     {
+        # Test Path
+        if (-not (Test-Path $Path)){throw 'Path not found Exception!!'}
+
         # Get Filter Item Path as List<Tuple<string>,<string>,<string>>
         $filterPath = GetTargetsFiles -Path $Path -Targets $Targets -Recurse:$isRecurse -Force:$Force
 
@@ -68,8 +72,6 @@
         $isRecurse = $PSBoundParameters.ContainsKey('Recurse')
         $isForce = $PSBoundParameters.ContainsKey('Force')
         $isWhatIf = $PSBoundParameters.ContainsKey('WhatIf')
-
-        if (-not (Test-Path $Path)){throw 'Path not found Exception!!'}
 
         function GetTargetsFiles
         {
@@ -185,32 +187,42 @@
                 $Force
             )
 
-            # remove default bound "Force"
-            $PSBoundParameters.Remove('Force') > $null
+            begin
+            {
+                # remove default bound "Force"
+                $PSBoundParameters.Remove('Force') > $null
+            }
 
-            # convert to regex format
-            $root = $RootPath.Replace('\', '\\')
+            process
+            {
+                # convert to regex format
+                $root = $RootPath.Replace('Microsoft.PowerShell.Core\FileSystem::','').Replace('\', '\\')
 
-            $Path `
-            | %{
-                # create destination DirectoryName
-                $directoryName = Join-Path $Destination ($_.Item2 -split $root | select -Last 1)
-                [PSCustomObject]@{
-                    Path = $_.Item1
-                    DirectoryName = $directoryName
-                    Destination = Join-Path $directoryName $_.Item3
-                }} `
-            | where {$Force -or $PSCmdlet.ShouldProcess($_.Path, ('Copy Item to {0}' -f $_.Destination))} `
-            | %{
-                Write-Verbose ("Copying '{0}' to '{1}'." -f $_.Path, $_.Destination)
-                New-Item -Path $_.DirectoryName -ItemType Directory -Force > $null
-                Copy-Item -Path $_.Path -Destination $_.Destination -Force
+                $Path `
+                | %{
+                    # create destination DirectoryName
+                    $directoryName = Join-Path $Destination ($_.Item2 -split $root | select -Last 1)
+                    [PSCustomObject]@{
+                        Path = $_.Item1
+                        DirectoryName = $directoryName
+                        Destination = Join-Path $directoryName $_.Item3
+                    }} `
+                | where {$Force -or $PSCmdlet.ShouldProcess($_.Path, ('Copy Item to {0}' -f $_.Destination))} `
+                | %{
+                    Write-Verbose ("Copying '{0}' to '{1}'." -f $_.Path, $_.Destination)
+                    New-Item -Path $_.DirectoryName -ItemType Directory -Force > $null
+                    Copy-Item -Path $_.Path -Destination $_.Destination -Force
+                }
             }
         }
     }
 }
 
-# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose       # Verbosing progress
-# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -WhatIf        # Copy not execute only WhatIf message show up
-# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Force         # Force ls and cp
-# Copy-ItemEX -Path D:\gehogemogehoge -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose # Exception if Path not found
+# Parameter Input
+# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose            # Verbosing progress
+# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -WhatIf             # Copy not execute only WhatIf message show up
+# Copy-ItemEX -Path D:\valentia -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Force              # Force ls and cp
+# Copy-ItemEX -Path D:\gehogemogehoge -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose      # Exception if Path not found
+
+# Pipeline Input
+# 'D:\valentia', "d:\fuga"  | Copy-ItemEX -Destination D:\hoge -Targets * -Recurse -Excludes Read* -Verbose  # Verbosing progress
