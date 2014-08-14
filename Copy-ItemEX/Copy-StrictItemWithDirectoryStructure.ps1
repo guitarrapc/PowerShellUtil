@@ -47,5 +47,5 @@ function Copy-StrictItemWithDirectoryStructure
 }
 
 # Usage : Copy item from c:\valentia to c:\hoge
-# $hoge = ls C:\valentia -Recurse | where {$_.Extension -eq ".ps1"}
-# Copy-StrictItemWithDirectoryStructure -inputPath $hoge -Destination c:\hoge -InputRoot c:\valentia
+# $hoge = ls D:\valentia -Recurse | where {$_.Extension -eq ".ps1"}
+# Copy-StrictItemWithDirectoryStructure -inputPath $hoge -Destination D:\hoge -InputRoot D:\valentia
