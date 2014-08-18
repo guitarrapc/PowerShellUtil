@@ -23,7 +23,8 @@ ls d:\ `
         SymbolicPath = Join-Path "d:\zzzzz" $_.Name
     }
 } `
-| Set-SymbolicLink -Verbose--------------------------------------------
+| Set-SymbolicLink -Verbose
+--------------------------------------------
 Pipeline Input to create SymbolicLink items. This will make symbolic in d:\zzzz with samename of input Path name.
 This means you can easily create Symbolic for different Path.
 
