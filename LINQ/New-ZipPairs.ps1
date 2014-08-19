@@ -13,14 +13,8 @@
             Mandatory = 1,
             Position = 1,
             ValueFromPipelineByPropertyName = 1)]
-        $value,
- 
-        [parameter(
-            Mandatory = 0,
-            Position = 2)]
-        [string]
-        $Prefix = "_"
-    )
+        $value
+     )
  
     begin
     {
@@ -40,13 +34,25 @@
             $InputArray | %{$list.Add($_)}
             return $list
         }
+
+        function GetType ($Object)
+        {
+            if (($Object | measure).count -eq 1)
+            {
+                $Object.GetType().FullName
+            }
+            else
+            {
+                $Object | select -First 1 | %{$_.GetType().FullName}
+            }
+        }
     }
  
     process
     {
         # Get Type
-        $keyType = $key | select -First 1 | %{$_.GetType().FullName}
-        $valueType = $value | select -First 1 | %{$_.GetType().FullName}
+        $keyType = GetType -Object $key        
+        $valueType = GetType -Object $value
 
         # Create Typed container
         $list = New-Object "System.Collections.Generic.List[System.Tuple[$keyType, $valueType]]"
@@ -75,13 +81,20 @@
         }
  
         # Make Element Pair
-        $i = 0
-        do
+        if ($length -eq 1)
         {
-            $list.Add($(New-Object "System.Tuple[[$keyType],[$valueType]]" ($keys[$i], $values[$i])))
-            $i++
+            $list.Add($(New-Object "System.Tuple[[$keyType],[$valueType]]" ($keys, $values)))
         }
-        while ($i -lt $length)
+        else
+        {
+            $i = 0
+            do
+            {
+                $list.Add($(New-Object "System.Tuple[[$keyType],[$valueType]]" ($keys[$i], $values[$i])))
+                $i++
+            }
+            while ($i -lt $length)
+        }
     }
  
     end
@@ -99,3 +112,6 @@ New-ZipPairs -key $hoge -value $fuga
 
 # sample Key<System.Diagnostics.Process>, Value<System.IO.FileInfo>
 # New-ZipPairs -key (ps) -value (ls)
+
+# sample single item input
+# New-ZipPairs -key "d:\hogemoge" -value "d:\fugafuga"
