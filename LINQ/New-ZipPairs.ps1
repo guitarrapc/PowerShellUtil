@@ -37,21 +37,14 @@
 
         function GetType ($Object)
         {
-            if (($Object | measure).count -eq 1)
-            {
-                $Object.GetType().FullName
-            }
-            else
-            {
-                $Object | select -First 1 | %{$_.GetType().FullName}
-            }
+            @($Object) | select -First 1 | %{$_.GetType().FullName}
         }
     }
  
     process
     {
         # Get Type
-        $keyType = GetType -Object $key        
+        $keyType = GetType -Object $key
         $valueType = GetType -Object $value
 
         # Create Typed container
@@ -115,3 +108,10 @@ New-ZipPairs -key $hoge -value $fuga
 
 # sample single item input
 # New-ZipPairs -key "d:\hogemoge" -value "d:\fugafuga"
+
+<#
+# sample Key<String>, Value<Int32>
+[int[]]$hoge = 1
+[string[]]$fuga = "hoge"
+New-ZipPairs -key $hoge -value $fuga
+#>
