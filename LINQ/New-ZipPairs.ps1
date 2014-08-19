@@ -63,7 +63,6 @@
  
         # Make Element Pair
         $i = 0
-        
         do
         {
             $list.Add($(New-Object 'System.Tuple[[string],[string]]' ($keys[$i], $values[$i])))
