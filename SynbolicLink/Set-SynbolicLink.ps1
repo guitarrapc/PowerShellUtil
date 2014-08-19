@@ -77,12 +77,12 @@ function Set-SymbolicLink
     process
     {
         # Work as like LINQ Zip() method
-        $zip = NewZipPairs -key $Path -value $SymbolicPath -Prefix $prefix
-        foreach ($x in $zip.GetEnumerator())
+        $zip = New-ZipPairs -key $Path -value $SymbolicPath
+        foreach ($x in $zip)
         {
             # reverse original key
-            $targetPath = ($x.Key -split "$($prefix * ($i + 1))" | select -Last 1)
-            $SymbolicNewPath = $x.value
+            $targetPath = $x.item1
+            $SymbolicNewPath = $x.item2
 
             if ($ForceFile -eq $true)
             {
@@ -120,9 +120,6 @@ function Set-SymbolicLink
     begin
     {
         $script:ErrorActionPreference = 'Stop'
-        $prefix = "_"
-        $i = 0 # Initialize prefix Length
-
         try
         {
             Add-Type -Namespace SymbolicLink -Name Utils -MemberDefinition @"
@@ -203,7 +200,7 @@ public static void CreateSymLink(string name, string target, bool isDirectory = 
             }
         }
 
-        function NewZipPairs
+        function New-ZipPairs
         {
             [CmdletBinding()]
             param
@@ -212,39 +209,53 @@ public static void CreateSymLink(string name, string target, bool isDirectory = 
                     Mandatory = 1,
                     Position = 0,
                     ValueFromPipelineByPropertyName = 1)]
-                [string[]]
                 $key,
-
+ 
                 [parameter(
                     Mandatory = 1,
                     Position = 1,
                     ValueFromPipelineByPropertyName = 1)]
-                [string[]]
-                $value,
-
-                [parameter(
-                    Mandatory = 0,
-                    Position = 2)]
-                [string]
-                $Prefix = "_"
-            )
-
+                $value
+             )
+ 
             begin
             {
-                function ToArrayEx ([string[]]$InputStringArray)
+                if ($null -eq $key)
                 {
-                    $array = @()
-                    $array += $InputStringArray | %{$_}
-                    $array
+                    throw "Key Null Reference Exception!!"
+                }
+
+                if ($null -eq $value)
+                {
+                    throw "Value Null Reference Exception!!"
+                }
+
+                function ToListEx ($InputArray, $type)
+                {
+                    $list = New-Object "System.Collections.Generic.List[$type]"
+                    $InputArray | %{$list.Add($_)}
+                    return $list
+                }
+
+                function GetType ($Object)
+                {
+                    @($Object) | select -First 1 | %{$_.GetType().FullName}
                 }
             }
-
+ 
             process
             {
-                # ToArray
-                [string[]]$keys = ToArrayEx -InputStringArray $key
-                [string[]]$values = ToArrayEx -InputStringArray $value
+                # Get Type
+                $keyType = GetType -Object $key
+                $valueType = GetType -Object $value
 
+                # Create Typed container
+                $list = New-Object "System.Collections.Generic.List[System.Tuple[$keyType, $valueType]]"
+
+                # To Typed List
+                $keys = ToListEx -InputArray $key -type $keyType
+                $values = ToListEx -InputArray $value -type $valueType
+ 
                 # Element Count Check
                 $keyElementsCount = ($keys | measure).count
                 $valueElementsCount = ($values | measure).count
@@ -253,7 +264,7 @@ public static void CreateSymLink(string name, string target, bool isDirectory = 
                     # TagValue auto fill with "*" when Value is empty
                     $values = 1..$keyElementsCount | %{"*"}
                 }
-
+ 
                 # Get shorter list
                 $length = if ($keyElementsCount -le $valueElementsCount)
                 {
@@ -263,23 +274,27 @@ public static void CreateSymLink(string name, string target, bool isDirectory = 
                 {
                     $valueElementsCount
                 }
-
+ 
                 # Make Element Pair
-                $i = 0
-                $dictionary = New-Object 'System.Collections.Generic.Dictionary[[string],[string]]'
-                do
+                if ($length -eq 1)
                 {
-                    # make new key to avoid duplicate entry
-                    $key = "$($prefix * ($i + 1))" + $($keys[$i])
-                    $dictionary.Add($key,$values[$i])
-                    $i++
+                    $list.Add($(New-Object "System.Tuple[[$keyType],[$valueType]]" ($keys, $values)))
                 }
-                while ($i -lt $length)
+                else
+                {
+                    $i = 0
+                    do
+                    {
+                        $list.Add($(New-Object "System.Tuple[[$keyType],[$valueType]]" ($keys[$i], $values[$i])))
+                        $i++
+                    }
+                    while ($i -lt $length)
+                }
             }
-
+ 
             end
             {
-                return $dictionary
+                return $list
             }
         }
     }
