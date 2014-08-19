@@ -31,7 +31,7 @@
         function ToListEx ($InputArray, $type)
         {
             $list = New-Object "System.Collections.Generic.List[$type]"
-            $InputArray | %{$list.Add($_)}
+            @($InputArray) | where {$_.GetType().FullName -eq $type} | %{$list.Add($_)}
             return $list
         }
 
