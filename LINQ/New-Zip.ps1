@@ -61,7 +61,7 @@
         finally
         {
             if(($d1 = $e1 -as [IDisposable]) -ne $null) { $d1.Dispose() }
-            if(($d2 = $e1 -as [IDisposable]) -ne $null) { $d2.Dispose() }
+            if(($d2 = $e2 -as [IDisposable]) -ne $null) { $d2.Dispose() }
             if(($d3 = $psvariable -as [IDisposable]) -ne $null) {$d3.Dispose() }
             if(($d4 = $context -as [IDisposable]) -ne $null) {$d4.Dispose() }
             if(($d5 = $tuple -as [IDisposable]) -ne $null) {$d5.Dispose() }
