@@ -1,35 +1,34 @@
-﻿function Get-DirectoryVolume{
+﻿function Get-DirectoryVolume
+{
 
     [CmdletBinding()]
-    param(
+    param
+    (
         [parameter(
             position = 0,
-            mandatory,
-            valuefrompipelinebypropertyname,
-            valuefrompipeline)]
+            mandatory = 1,
+            valuefrompipeline = 1,
+            valuefrompipelinebypropertyname = 1)]
         [string]
         $path = $null,
 
         [parameter(
             position = 1,
             mandatory = 0,
-            valuefrompipelinebypropertyname,
-            valuefrompipeline)]
+            valuefrompipelinebypropertyname = 1)]
         [string]
-        $scale = "MB"
+        $scale = "1KB"
     )
 
-    Get-ChildItem $path -Recurse `
-        | where PSIsContainer `
-        | %{
-            $i = $_
-            $subFolderItems = (Get-ChildItem $i.FullName | where Length | measure Length -sum)
-            [PSCustomObject]@{
-                Fullname = $i.FullName
-                MB = [decimal]("{0:N2}" -f ($subFolderItems.sum / 1MB))
-            }} `
-        | sort $scale -Descending `
-        | Format-Table -AutoSize
+    Get-ChildItem -Path $path -Recurse `
+    | where PSIsContainer `
+    | %{
+        $subFolderItems = (Get-ChildItem $_.FullName | where Length | measure Length -sum)
+        [PSCustomObject]@{
+            Fullname = $_.FullName
+            MB = [decimal]("{0:N2}" -f ($subFolderItems.sum / $scale))
+        }} `
+    | sort $scale -Descending
 }
 
 Get-DirectoryVolume -path C:\Logs
@@ -41,16 +40,16 @@ Get-ChildItem c:\logs -Recurse | where PSIsContainer | %{$i=$_;$subFolderItems =
 
 # refine oneliner
 Get-ChildItem c:\logs -Recurse `
-        | where PSIsContainer `
-        | %{
-            $i=$_
-            $subFolderItems = (Get-ChildItem $i.FullName | where Length | measure Length -sum)
-            [PSCustomObject]@{
-                Fullname=$i.FullName
-                MB=[decimal]("{0:N2}" -f ($subFolderItems.sum / 1MB))
-            }} `
-        | sort MB -Descending `
-        | format -AutoSize
+| where PSIsContainer `
+| %{
+    $i=$_
+    $subFolderItems = (Get-ChildItem $i.FullName | where Length | measure Length -sum)
+    [PSCustomObject]@{
+        Fullname=$i.FullName
+        MB=[decimal]("{0:N2}" -f ($subFolderItems.sum / 1MB))
+    }} `
+| sort MB -Descending `
+| format -AutoSize
 
 
 # if devide each
