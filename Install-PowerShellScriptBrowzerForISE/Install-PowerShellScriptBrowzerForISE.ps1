@@ -66,7 +66,11 @@ function Start-ProcessEX ([string]$exe, [string]$arguments)
 }
 
 # Download
-[uri]$uri = "http://download.microsoft.com/download/0/B/B/0BBAA3D7-3B61-4830-86CE-D93408D7AABD/ScriptBrowser.msi"
+# Script Browser 1.1
+# [uri]$uri = "http://download.microsoft.com/download/0/B/B/0BBAA3D7-3B61-4830-86CE-D93408D7AABD/ScriptBrowser.msi"
+# Script Browser 1.3
+[uri]$uri = "http://download.microsoft.com/download/0/B/B/0BBAA3D7-3B61-4830-86CE-D93408D7AABD/ScriptBrowser.exe"
+
 $DownloadFolder = "C:\Download"
 $fileName = Split-Path $uri -Leaf
 $path = Join-Path $DownloadFolder $FileName
