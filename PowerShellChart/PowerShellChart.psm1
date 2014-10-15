@@ -14,12 +14,13 @@
 
 # .Example
 <#
+$osloTemperature = [ordered]@{}
 [xml]$weather = (Invoke-WebRequest -Uri http://www.yr.no/place/Norway/Oslo/Oslo/Oslo/varsel.xml).Content
 $weather.weatherdata.forecast.tabular.time | foreach { $osloTemperature[$_.from] = $_.temperature.value }
  
 # Create chart, add dataset and show
 New-Chart -Title "Temperature in Oslo" -XInterval 4 -YInterval 2 -Width 1200 `
-| Add-ChartDataset -Dataset $osloTemperature -DatasetName "Temperature" -SeriesChartType Spline -OutVariable tempChart `
+| Add-Chart -Dataset $osloTemperature -DatasetName "Temperature" -SeriesChartType Spline -OutVariable tempChart `
 | Show-Chart
 #>
 
