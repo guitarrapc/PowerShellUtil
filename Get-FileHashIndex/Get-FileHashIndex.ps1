@@ -131,7 +131,7 @@
             try
             {
                 $type = "System.Security.Cryptography.$Algorithm"
-                $crypto = ([Type]::GetType($type))::Create()
+                $crypto = [System.Security.Cryptography.HashAlgorithm]::Create($Algorithm)
                 [byte[]]$hash = $crypto.ComputeHash($Stream)
                 return [System.BitConverter]::ToString($hash).Replace("-", [string]::Empty)
             }
