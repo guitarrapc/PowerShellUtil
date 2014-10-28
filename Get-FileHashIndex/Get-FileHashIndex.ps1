@@ -88,7 +88,7 @@
         [Alias("PSPath", "LiteralPath")]
         [string[]]$Path,
 
-        [parameter(Mandatory = 1, Position = 1, ValueFromPipelineByPropertyName =1, ParameterSetName = "MD5")]
+        [parameter(Mandatory = 0, Position = 1, ValueFromPipelineByPropertyName =1, ParameterSetName = "MD5")]
         [ValidateSet("MACTripleDES", "MD5", "RIPEMD160", "SHA1", "SHA256", "SHA384", "SHA512")]
         [string]$Algorithm = "MD5",
 
