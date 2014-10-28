@@ -143,28 +143,3 @@
 
     }
 }
-
-<#
-measure-Command {Get-FileHashIndex -Path d:\test\test -Algorithm RIPEMD160 -Recurse} # 693.6726
-measure-Command {Get-FileHashIndex -Path d:\test\test -Algorithm SHA1 -Recurse} # 641.9092
-measure-Command {Get-FileHashIndex -Path d:\test\test -Algorithm SHA256 -Recurse} # 695.2601
-measure-Command {Get-FileHashIndex -Path d:\test\test -Algorithm SHA384 -Recurse} # 677.8795
-measure-Command {Get-FileHashIndex -Path d:\test\test -Algorithm SHA512 -Recurse} # 685.4792
-measure-Command {ls d:\test\test -Recurse -File | Get-FileHashIndex -Algorithm MD5} # 878.1032
-measure-Command {ls d:\test\test -Recurse -File | Get-FileHash -Algorithm MD5} # 1364.2046
-measure-Command {ls d:\test\test -Recurse -File | Get-FileHash -Algorithm SHA256} # 1488.3237
-#>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
