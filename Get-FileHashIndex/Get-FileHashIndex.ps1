@@ -116,7 +116,7 @@
             }
 
             return [PSCustomObject]@{
-                Algorythm = $Algorithm
+                Algorithm = $Algorithm
                 Hash = $hash
                 Path = $_.FullName
             }
