@@ -90,7 +90,7 @@
 
         [parameter(Mandatory = 0, Position = 1, ValueFromPipelineByPropertyName =1, ParameterSetName = "MD5")]
         [ValidateSet("MACTripleDES", "MD5", "RIPEMD160", "SHA1", "SHA256", "SHA384", "SHA512")]
-        [string]$Algorithm = "MD5",
+        [string]$Algorithm = "SHA256",
 
         [parameter(Mandatory = 0, Position = 2, ValueFromPipelineByPropertyName =1)]
         [switch]$Recurse
