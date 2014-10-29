@@ -119,6 +119,7 @@
                 Algorithm = $Algorithm
                 Hash = $hash
                 Path = $_.FullName
+                File = $_
             }
         }
     }
