@@ -102,9 +102,16 @@
     }
 
     end
-    {        
-        Get-ChildItem -Path $list -Recurse:$Recurse -File `
-        | %{
+    {
+        foreach ($l in $list){ Get-ChildItem -Path $l -File -Recurse:$Recurse | GetHashInfo }
+    }
+
+    begin
+    {
+        $list = New-Object 'System.Collections.Generic.List[string]'
+
+        filter GetHashInfo
+        {
             try
             {
                 [System.IO.FileStream]$stream = [System.IO.File]::OpenRead($_.fullname)
@@ -122,11 +129,7 @@
                 File = $_
             }
         }
-    }
 
-    begin
-    {
-        $list = New-Object 'System.Collections.Generic.List[string]'
         function GetHash ([System.IO.FileStream]$Stream, [string]$Algorithm)
         {
             try
