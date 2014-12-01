@@ -52,7 +52,8 @@
         [parameter(mandatory = 0)]
         [string[]]$Groups = "administrators",
 
-        [parameter(mandatory = 0)][int32]$UserFlag = 0x10000
+        [parameter(mandatory = 0)]
+        [int32]$UserFlag = 0x10000
     )
 
     $hostPC = [System.Environment]::MachineName
