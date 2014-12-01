@@ -6,11 +6,10 @@
 .DESCRIPTION
    User will create as you passed Credential.
 .EXAMPLE
-    New-CreateOSUser -Credential (Get-Credential) -Groups Administrators
+    New-OSUser -Credential (Get-Credential) -Groups Administrators
     # create new user with Group assigned Administrators
 .NOTES
     - User Flag Property Samples
-
     Run LogOn Script　&H0001
     ADS_UF_SCRIPT  =  0X0001
     Account Disable　&H0002
