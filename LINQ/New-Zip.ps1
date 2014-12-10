@@ -3,33 +3,20 @@
     [CmdletBinding()]
     param
     (
-        [parameter(
-            Mandatory = 0,
-            Position = 0,
-            ValueFromPipeline = 1,
-            ValueFromPipelineByPropertyName = 1)]
-        [PSObject[]]
-        $first,
+        [parameter(Mandatory = 0, Position = 0, ValueFromPipeline = 1, ValueFromPipelineByPropertyName = 1)]
+        [PSObject[]]$First,
  
-        [parameter(
-            Mandatory = 0,
-            Position = 1,
-            ValueFromPipelineByPropertyName = 1)]
-        [PSObject[]]
-        $second,
+        [parameter(Mandatory = 0, Position = 1, ValueFromPipelineByPropertyName = 1)]
+        [PSObject[]]$Second,
 
-        [parameter(
-            Mandatory = 0,
-            Position = 2,
-            ValueFromPipelineByPropertyName = 1)]
-        [scriptBlock]
-        $resultSelector
+        [parameter(Mandatory = 0, Position = 2, ValueFromPipelineByPropertyName = 1)]
+        [scriptBlock]$ResultSelector
     )
 
     process
     {
-        if ([string]::IsNullOrWhiteSpace($first)){ break }        
-        if ([string]::IsNullOrWhiteSpace($second)){ break }
+        if (($first | measure).Count -eq 0){ break }        
+        if (($second | measure).Count -eq 0){ break }
         
         try
         {
