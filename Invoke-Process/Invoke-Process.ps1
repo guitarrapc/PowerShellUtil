@@ -102,21 +102,9 @@
         function GetCommandResult ([System.Diagnostics.Process]$Process, [System.Text.StringBuilder]$StandardStringBuilder, [System.Text.StringBuilder]$ErrorStringBuilder)
         {
             'Get command result string.' | VerboseOutput
-            $standardString = $StandardStringBuilder.ToString()
-            $errorString = $ErrorStringBuilder.ToString()
-            if(($process.ExitCode -eq 0) -and ($standardString -eq "") -and ($errorString -ne ""))
-            {
-                $standardOutput = $errorString
-                $errorOutput = ""
-            }
-            else
-            {
-                $standardOutput = $standardString
-                $errorOutput = $errorString
-            }
             return [PSCustomObject]@{
-                StandardOutput = $standardOutput
-                ErrorOutput = $errorOutput
+                StandardOutput = $StandardStringBuilder.ToString()
+                ErrorOutput = $ErrorStringBuilder.ToString()
                 ExitCode = $process.ExitCode
             }
         }
