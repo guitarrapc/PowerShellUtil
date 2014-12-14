@@ -45,10 +45,16 @@
         finally
         {
             if ($null -ne $process){ $process.Dispose() }
-            if ($null -ne $stdEvent){ Unregister-Event -SourceIdentifier $stdEvent.Name }
-            if ($null -ne $errorEvent){ Unregister-Event -SourceIdentifier $errorEvent.Name }
-            if ($null -ne $stdEvent){ $stdEvent.Dispose() }
-            if ($null -ne $errorEvent){ $errorEvent.Dispose() }        
+            if ($null -ne $stdEvent)
+            {
+                Unregister-Event -SourceIdentifier $stdEvent.Name
+                $stdEvent.Dispose()
+            }
+            if ($null -ne $errorEvent)
+            {
+                Unregister-Event -SourceIdentifier $errorEvent.Name
+                $errorEvent.Dispose()
+            }
         }
     }
 
