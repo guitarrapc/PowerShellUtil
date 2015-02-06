@@ -1,4 +1,4 @@
-﻿function Invoke-Process
+function Invoke-Process
 {
     [OutputType([PSCustomObject])]
     [CmdletBinding()]
