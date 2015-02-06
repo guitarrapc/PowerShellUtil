@@ -4,17 +4,17 @@ function Invoke-Process
     [CmdletBinding()]
     param
     (
-        [Parameter(Mandatory = 0, Position = 0)]
+        [Parameter(Mandatory = $false, Position = 0)]
         [string]$FileName = "PowerShell.exe",
 
-        [Parameter(Mandatory = 0, Position = 1)]
+        [Parameter(Mandatory = $false, Position = 1)]
         [string]$Arguments = "",
         
-        [Parameter(Mandatory = 0, Position = 2)]
+        [Parameter(Mandatory = $false, Position = 2)]
         [string]$WorkingDirectory = ".",
 
-        [Parameter(Mandatory = 0, Position = 3)]
-        [int]$TimeoutMS = 120000
+        [Parameter(Mandatory = $false, Position = 3)]
+        [TimeSpan]$Timeout = [System.TimeSpan]::FromMinutes(2)
     )
 
     end
@@ -23,8 +23,19 @@ function Invoke-Process
         {
             # new Process
             $process = NewProcess -FileName $FileName -Arguments $Arguments -WorkingDirectory $WorkingDirectory
-                
+            
             # Event Handler for Output
+            $stdSb = New-Object -TypeName System.Text.StringBuilder
+            $errorSb = New-Object -TypeName System.Text.StringBuilder
+            $scripBlock = 
+            {
+                $x = $Event.SourceEventArgs.Data
+                if (-not [String]::IsNullOrEmpty($x))
+                {
+                    [System.Console]::WriteLine($x)
+                    $Event.MessageData.AppendLine($x)
+                }
+            }
             $stdEvent = Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $scripBlock -MessageData $stdSb
             $errorEvent = Register-ObjectEvent -InputObject $process -EventName ErrorDataReceived -Action $scripBlock -MessageData $errorSb
 
@@ -32,48 +43,49 @@ function Invoke-Process
             $process.Start() > $null
             $process.BeginOutputReadLine()
             $process.BeginErrorReadLine()
-
+            
             # wait for complete
-            WaitProcessComplete -Process $process -TimeoutMS $TimeoutMS
+            WaitProcessComplete -Process $process -Timeout $Timeout
 
             # verbose Event Result
             $stdEvent, $errorEvent | VerboseOutput
 
-            # output
+            # Unregister Event to recieve Asynchronous Event output (You should call before process.Dispose())
+            Unregister-Event -SourceIdentifier $stdEvent.Name
+            Unregister-Event -SourceIdentifier $errorEvent.Name
+
+            # verbose Event Result
+            $stdEvent, $errorEvent | VerboseOutput
+
+            # Get Process result
             return GetCommandResult -Process $process -StandardStringBuilder $stdSb -ErrorStringBuilder $errorSb
         }
         finally
         {
             if ($null -ne $process){ $process.Dispose() }
-            if ($null -ne $stdEvent)
-            {
-                Unregister-Event -SourceIdentifier $stdEvent.Name
-                $stdEvent.Dispose()
-            }
-            if ($null -ne $errorEvent)
-            {
-                Unregister-Event -SourceIdentifier $errorEvent.Name
-                $errorEvent.Dispose()
-            }
+            if ($null -ne $stdEvent){ $stdEvent.Dispose() }
+            if ($null -ne $errorEvent){ $errorEvent.Dispose() }
         }
     }
 
     begin
     {
-        # Prerequisites       
-        $stdSb = New-Object -TypeName System.Text.StringBuilder
-        $errorSb = New-Object -TypeName System.Text.StringBuilder
-        $scripBlock = 
+        function NewProcess
         {
-            if (-not [String]::IsNullOrEmpty($EventArgs.Data))
-            {
-                        
-                $Event.MessageData.AppendLine($Event.SourceEventArgs.Data)
-            }
-        }
+            [OutputType([System.Diagnostics.Process])]
+            [CmdletBinding()]
+            param
+            (
+                [parameter(Mandatory = $true)]
+                [string]$FileName,
+                
+                [parameter(Mandatory = $false)]
+                [string]$Arguments,
+                
+                [parameter(Mandatory = $false)]
+                [string]$WorkingDirectory
+            )
 
-        function NewProcess ([string]$FileName, [string]$Arguments, [string]$WorkingDirectory)
-        {
             "Execute command : '{0} {1}', WorkingSpace '{2}'" -f $FileName, $Arguments, $WorkingDirectory | VerboseOutput
             # ProcessStartInfo
             $psi = New-object System.Diagnostics.ProcessStartInfo 
@@ -89,29 +101,56 @@ function Invoke-Process
             # Set Process
             $process = New-Object System.Diagnostics.Process 
             $process.StartInfo = $psi
+            $process.EnableRaisingEvents = $true
             return $process
         }
 
-        function WaitProcessComplete ([System.Diagnostics.Process]$Process, [int]$TimeoutMS)
+        function WaitProcessComplete
         {
-            "Waiting for command complete. It will Timeout in {0}ms" -f $TimeoutMS | VerboseOutput
-            $isComplete = $Process.WaitForExit($TimeoutMS)
-            if (-not $isComplete)
+            [OutputType([Void])]
+            [CmdletBinding()]
+            param
+            (
+                [parameter(Mandatory = $true)]
+                [System.Diagnostics.Process]$Process,
+
+                [parameter(Mandatory = $true)]
+                [TimeSpan]$Timeout
+            )
+
+            "Waiting for command complete. It will Timeout in {0}ms" -f $Timeout.TotalMilliseconds | VerboseOutput
+            $isTimeout = $false
+            if (-not $Process.WaitForExit($Timeout.TotalMilliseconds))
             {
-                "Timeout detected for {0}ms. Kill process immediately" -f $timeoutMS | VerboseOutput
+                $isTimeout = $true
+                "Timeout detected for {0}ms. Kill process immediately" -f $Timeout.TotalMilliseconds | VerboseOutput
                 $Process.Kill()
-                $Process.CancelOutputRead()
-                $Process.CancelErrorRead()
             }
+            $Process.CancelOutputRead()
+            $Process.CancelErrorRead()
         }
 
-        function GetCommandResult ([System.Diagnostics.Process]$Process, [System.Text.StringBuilder]$StandardStringBuilder, [System.Text.StringBuilder]$ErrorStringBuilder)
+        function GetCommandResult
         {
+            [OutputType([PSCustomObject])]
+            [CmdletBinding()]
+            param
+            (
+                [parameter(Mandatory = $true)]
+                [System.Diagnostics.Process]$Process,
+
+                [parameter(Mandatory = $true)]
+                [System.Text.StringBuilder]$StandardStringBuilder,
+
+                [parameter(Mandatory = $true)]
+                [System.Text.StringBuilder]$ErrorStringBuilder
+            )
+            
             'Get command result string.' | VerboseOutput
             return [PSCustomObject]@{
-                StandardOutput = $StandardStringBuilder.ToString()
-                ErrorOutput = $ErrorStringBuilder.ToString()
-                ExitCode = $process.ExitCode
+                StandardOutput = $StandardStringBuilder.ToString().Trim()
+                ErrorOutput = $ErrorStringBuilder.ToString().Trim()
+                ExitCode = $Process.ExitCode
             }
         }
 
