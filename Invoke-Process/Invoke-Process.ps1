@@ -45,7 +45,17 @@ function Invoke-Process
             $process.BeginErrorReadLine()
             
             # wait for complete
-            WaitProcessComplete -Process $process -Timeout $Timeout
+            "Waiting for command complete. It will Timeout in {0}ms" -f $Timeout.TotalMilliseconds | VerboseOutput
+            $isTimeout = $false
+            if (-not $Process.WaitForExit($Timeout.TotalMilliseconds))
+            {
+                $isTimeout = $true
+                "Timeout detected for {0}ms. Kill process immediately" -f $Timeout.TotalMilliseconds | VerboseOutput
+                $Process.Kill()
+            }
+            $Process.WaitForExit()
+            $Process.CancelOutputRead()
+            $Process.CancelErrorRead()
 
             # verbose Event Result
             $stdEvent, $errorEvent | VerboseOutput
@@ -58,7 +68,7 @@ function Invoke-Process
             $stdEvent, $errorEvent | VerboseOutput
 
             # Get Process result
-            return GetCommandResult -Process $process -StandardStringBuilder $stdSb -ErrorStringBuilder $errorSb
+            return GetCommandResult -Process $process -StandardStringBuilder $stdSb -ErrorStringBuilder $errorSb -IsTimeOut $isTimeout
         }
         finally
         {
@@ -105,31 +115,6 @@ function Invoke-Process
             return $process
         }
 
-        function WaitProcessComplete
-        {
-            [OutputType([Void])]
-            [CmdletBinding()]
-            param
-            (
-                [parameter(Mandatory = $true)]
-                [System.Diagnostics.Process]$Process,
-
-                [parameter(Mandatory = $true)]
-                [TimeSpan]$Timeout
-            )
-
-            "Waiting for command complete. It will Timeout in {0}ms" -f $Timeout.TotalMilliseconds | VerboseOutput
-            $isTimeout = $false
-            if (-not $Process.WaitForExit($Timeout.TotalMilliseconds))
-            {
-                $isTimeout = $true
-                "Timeout detected for {0}ms. Kill process immediately" -f $Timeout.TotalMilliseconds | VerboseOutput
-                $Process.Kill()
-            }
-            $Process.CancelOutputRead()
-            $Process.CancelErrorRead()
-        }
-
         function GetCommandResult
         {
             [OutputType([PSCustomObject])]
@@ -143,7 +128,10 @@ function Invoke-Process
                 [System.Text.StringBuilder]$StandardStringBuilder,
 
                 [parameter(Mandatory = $true)]
-                [System.Text.StringBuilder]$ErrorStringBuilder
+                [System.Text.StringBuilder]$ErrorStringBuilder,
+
+                [parameter(Mandatory = $true)]
+                [Bool]$IsTimeout
             )
             
             'Get command result string.' | VerboseOutput
@@ -151,6 +139,7 @@ function Invoke-Process
                 StandardOutput = $StandardStringBuilder.ToString().Trim()
                 ErrorOutput = $ErrorStringBuilder.ToString().Trim()
                 ExitCode = $Process.ExitCode
+                IsTimeOut = $IsTimeout
             }
         }
 
