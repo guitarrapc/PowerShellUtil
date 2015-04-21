@@ -2,39 +2,22 @@
 {
     [CmdletBinding()]
     param(
-        [parameter(
-            Position  = 0,
-            Mandatory = 0,
-            ValueFromPipelinebyPropertyName = 1)]
+        [parameter(Position  = 0, Mandatory = 0, ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $OutPath = "$env:USERPROFILE\Documents\ScreenShot",
+        [string]$OutPath = "$env:USERPROFILE\Documents\ScreenShot",
 
         #screenshot_[yyyyMMdd_HHmmss_ffff].png
-        [parameter(
-            Position  = 1,
-            Mandatory = 0,
-            ValueFromPipelinebyPropertyName = 1)]
+        [parameter(Position  = 1, Mandatory = 0, ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
-        [string]
-        $FileNamePattern = 'screenshot_{0}.png',
+        [string]$FileNamePattern = 'screenshot_{0}.png',
 
-        [parameter(
-            Position  = 2,
-            Mandatory = 0,
-            ValueFromPipeline = 1,
-            ValueFromPipelinebyPropertyName = 1)]
+        [parameter(Position  = 2, Mandatory = 0, ValueFromPipeline = 1, ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
-        [int]
-        $RepeatTimes = 0,
+        [int]$RepeatTimes = 0,
 
-        [parameter(
-            Position  = 3,
-            Mandatory = 0,
-            ValueFromPipelinebyPropertyName = 1)]
+        [parameter(Position  = 3, Mandatory = 0, ValueFromPipelinebyPropertyName = 1)]
         [ValidateNotNullOrEmpty()]
-        [int]
-        $DurationMs = 1
+        [int]$DurationMs = 1
      )
 
      begin
