@@ -98,7 +98,6 @@ function Invoke-Process
                 
                 [parameter(Mandatory = $false)]
                 [string]$WorkingDirectory
-
             )
 
             "Execute command : '{0} {1}', WorkingSpace '{2}'" -f $FileName, $Arguments, $WorkingDirectory | VerboseOutput
