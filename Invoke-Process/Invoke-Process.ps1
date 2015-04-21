@@ -14,8 +14,11 @@ function Invoke-Process
         [string]$WorkingDirectory = ".",
 
         [Parameter(Mandatory = $false, Position = 3)]
-        [TimeSpan]$Timeout = [System.TimeSpan]::FromMinutes(2)
-    )
+        [TimeSpan]$Timeout = [System.TimeSpan]::FromMinutes(2),
+
+        [Parameter(Mandatory = $false, Position = 4)]
+        [string]$Priority = "Normal"
+	)
 
     end
     {
@@ -41,6 +44,7 @@ function Invoke-Process
 
             # execution
             $process.Start() > $null
+			$process.PriorityClass = ([System.Diagnostics.ProcessPriorityClass]::$Priority)	
             $process.BeginOutputReadLine()
             $process.BeginErrorReadLine()
             
