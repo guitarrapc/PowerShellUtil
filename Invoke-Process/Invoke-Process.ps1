@@ -33,9 +33,6 @@ function Invoke-Process
             # new Process
             $process = NewProcess -FileName $FileName -Arguments $Arguments -WorkingDirectory $WorkingDirectory
 
-            # Event Handler for Output
-            $stdSb = New-Object -TypeName System.Text.StringBuilder
-            $errorSb = New-Object -TypeName System.Text.StringBuilder
 
 			$stdMessageData= [PSCustomObject]@{
                 StringBuilder = New-Object -TypeName System.Text.StringBuilder
@@ -56,7 +53,7 @@ function Invoke-Process
 					{
 						[System.Console]::WriteLine($x)
 					}
-                    $Event.MessageData.AppendLine($x)
+                    $Event.MessageData.StringBuilder.AppendLine($x)
                 }
             }
             $stdEvent = Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $scripBlock -MessageData $stdMessageData
@@ -92,7 +89,7 @@ function Invoke-Process
             $stdEvent, $errorEvent | VerboseOutput
 
             # Get Process result
-            return GetCommandResult -Process $process -StandardStringBuilder $stdSb -ErrorStringBuilder $errorSb -IsTimeOut $isTimeout
+            return GetCommandResult -Process $process -StandardStringBuilder $stdMessageData.StringBuilder -ErrorStringBuilder $errorMessageData.StringBuilder -IsTimeOut $isTimeout
         }
         finally
         {
