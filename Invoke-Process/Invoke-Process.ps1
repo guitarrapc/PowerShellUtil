@@ -17,7 +17,7 @@ function Invoke-Process
         [TimeSpan]$Timeout = [System.TimeSpan]::FromMinutes(2),
 
         [Parameter(Mandatory = $false, Position = 4)]
-        [string]$Priority = "Normal"
+        [System.Diagnostics.ProcessPriorityClass]$Priority = [System.Diagnostics.ProcessPriorityClass]::Normal
 	)
 
     end
@@ -44,7 +44,7 @@ function Invoke-Process
 
             # execution
             $process.Start() > $null
-			$process.PriorityClass = ([System.Diagnostics.ProcessPriorityClass]::$Priority)	
+            $process.PriorityClass = $Priority
             $process.BeginOutputReadLine()
             $process.BeginErrorReadLine()
             
