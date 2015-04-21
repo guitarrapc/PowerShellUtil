@@ -17,7 +17,13 @@ function Invoke-Process
         [TimeSpan]$Timeout = [System.TimeSpan]::FromMinutes(2),
 
         [Parameter(Mandatory = $false, Position = 4)]
-        [string]$Priority = "Normal"
+        [string]$Priority = "Normal",
+
+        [Parameter(Mandatory = $false)]
+        [switch]$RedirectStandardOutput  = $False,
+
+        [Parameter(Mandatory = $false)]
+        [switch]$RedirectStandardError  = $False
 	)
 
     end
@@ -26,21 +32,35 @@ function Invoke-Process
         {
             # new Process
             $process = NewProcess -FileName $FileName -Arguments $Arguments -WorkingDirectory $WorkingDirectory
-            
+
             # Event Handler for Output
             $stdSb = New-Object -TypeName System.Text.StringBuilder
             $errorSb = New-Object -TypeName System.Text.StringBuilder
+
+			$stdMessageData= [PSCustomObject]@{
+                StringBuilder = New-Object -TypeName System.Text.StringBuilder
+                ConsoleOutput = !$RedirectStandardOutput
+            }
+
+			$errorMessageData= [PSCustomObject]@{
+                StringBuilder = New-Object -TypeName System.Text.StringBuilder
+                ConsoleOutput = !$RedirectStandardError
+            }
+
             $scripBlock = 
             {
                 $x = $Event.SourceEventArgs.Data
                 if (-not [String]::IsNullOrEmpty($x))
                 {
-                    [System.Console]::WriteLine($x)
+					if($Event.MessageData.ConsoleOutput)
+					{
+						[System.Console]::WriteLine($x)
+					}
                     $Event.MessageData.AppendLine($x)
                 }
             }
-            $stdEvent = Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $scripBlock -MessageData $stdSb
-            $errorEvent = Register-ObjectEvent -InputObject $process -EventName ErrorDataReceived -Action $scripBlock -MessageData $errorSb
+            $stdEvent = Register-ObjectEvent -InputObject $process -EventName OutputDataReceived -Action $scripBlock -MessageData $stdMessageData
+            $errorEvent = Register-ObjectEvent -InputObject $process -EventName ErrorDataReceived -Action $scripBlock -MessageData $errorMessageData
 
             # execution
             $process.Start() > $null
