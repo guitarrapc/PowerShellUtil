@@ -77,8 +77,8 @@ function Invoke-Process
         finally
         {
             if ($null -ne $process){ $process.Dispose() }
-            if ($null -ne $stdEvent){ $stdEvent.Dispose() }
-            if ($null -ne $errorEvent){ $errorEvent.Dispose() }
+            if ($null -ne $stdEvent){ $stdEvent.StopJob(); $stdEvent.Dispose() }
+            if ($null -ne $errorEvent){ $errorEvent.StopJob(); $errorEvent.Dispose() }
         }
     }
 
