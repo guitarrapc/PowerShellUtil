@@ -177,7 +177,7 @@ function Copy-TargetDirectory
     {
         Get-ChildItem -Path $SourceUserPath |
             Where-Object { $_.Name -notin $excludeFolders } |
-            ForEach-Object
+            ForEach-Object {
             {
                 $item = $_
                 switch ($item.PSIsContainer)
