@@ -1,3 +1,6 @@
+# Define a constant (read-only variable) which contains the list of folder names to be excluded from backup and copying
+New-Variable -Name 'excludeFolders' -Value "backup", "SharePoint", "SkyDrive", "DropBox", "SkyDrive Pro", "OneDrive" -Option ReadOnly
+
 ﻿function Main
 {
     [CmdletBinding()]
@@ -114,7 +117,7 @@ function Backup-UserDirectory
 
     begin
     {
-        $userPath = (Get-UserFolders | where Name -eq $userName).FullName        
+        $userPath = (Get-UserFolders | Where-Object { $_.Name -eq $userName }).FullName        
         $backupPath = Get-BackupDirectory -userPath $userPath
 
         if (-not (Test-BackupDirectory -backupPath $backupPath))
@@ -125,9 +128,9 @@ function Backup-UserDirectory
 
     process
     {
-        Get-ChildItem -Path $userPath `
-        | where Name -notin "backup", "SharePoint","SkyDrive","DropBox", "SkyDrive Pro" `
-        | %{Copy-Item -Path $_.FullName -Destination $backupPath -Recurse -ErrorAction SilentlyContinue}
+        Get-ChildItem -Path $userPath |
+            Where-Object { $_.Name -notin $excludeFolders } |
+            Copy-Item -Destination $backupPath -Recurse -ErrorAction SilentlyContinue
     }
 }
 
@@ -156,8 +159,8 @@ function Copy-TargetDirectory
 
     begin
     {
-        $SourceUserPath = (Get-UserFolders | where Name -eq $SourceUserName).FullName
-        $DestinationUserPath = (Get-UserFolders | where Name -eq $DestinationUserName).FullName
+        $SourceUserPath = (Get-UserFolders | Where-Object { $_.Name -eq $SourceUserName }).FullName
+        $DestinationUserPath = (Get-UserFolders | Where-Object { $_.Name -eq $DestinationUserName }).FullName
 
         if ($null -eq $SourceUserPath)
         {
@@ -172,28 +175,36 @@ function Copy-TargetDirectory
 
     process
     {
-        Get-ChildItem -Path $SourceUserPath `
-        | where Name -notin "backup", "SharePoint","SkyDrive","DropBox", "SkyDrive Pro" `
-        | %{
-            $item = $_
-            switch ($item.PSIsContainer)
-            {
-                $true  {
-                    Write-Verbose "Target is 'Directory'"
-                    $param = @{
-                    Path        = $item.FullName
-                    Destination = $item.FullName.Replace($item.BaseName,"").Replace($SourceUserPath,$DestinationUserPath)}
-                    Copy-Item @param -Force -ErrorAction SilentlyContinue -Recurse
-                }
-                $false {
-                    Write-Verbose "Target is 'File'"
-                    $param = @{
-                    Path        = $item.FullName
-                    Destination = $item.FullName.Replace($SourceUserPath,$DestinationUserPath)}
-                    Copy-Item @param -Force -ErrorAction SilentlyContinue -Recurse
+        Get-ChildItem -Path $SourceUserPath |
+            Where-Object { $_.Name -notin $excludeFolders } |
+            ForEach-Object {
+                $item = $_
+                switch ($item.PSIsContainer)
+                {
+                    $true  {
+                        Write-Verbose "Target is 'Directory'"
+                        $param = @{
+                            Path        = $item.FullName
+                            Destination = $item.Parent.FullName.Replace($SourceUserPath, $DestinationUserPath)
+                            Force       = $true
+                            Recurse     = $true
+                            ErrorAction = 'SilentlyContinue'
+                        }
+                        Copy-Item @param
+                    }
+                    $false {
+                        Write-Verbose "Target is 'File'"
+                        $param = @{
+                            Path        = $item.FullName
+                            Destination = $item.FullName.Replace($SourceUserPath, $DestinationUserPath)
+                            Force       = $true
+                            Recurse     = $true
+                            ErrorAction = 'SilentlyContinue'
+                        }
+                        Copy-Item @param
+                    }
                 }
             }
-        }
     }
 }
 
