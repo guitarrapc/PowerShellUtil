@@ -25,9 +25,9 @@ Set-PSReadlineKeyHandler -Key F7 -BriefDescription "History" -LongDescription "S
         }
     )
     # acs
-    # $history | Out-GridView -Title History -PassThru
+    # $command = $history | Out-GridView -Title History -PassThru
     # desc
-    $history | Sort-Object -Descending | Out-GridView -Title History -PassThru
+    $command = $history | Sort-Object -Descending | Out-GridView -Title History -PassThru
     if ($command) {
         [Microsoft.PowerShell.PSConsoleReadLine]::RevertLine()
         [Microsoft.PowerShell.PSConsoleReadLine]::Insert(($command -join "`n"))
