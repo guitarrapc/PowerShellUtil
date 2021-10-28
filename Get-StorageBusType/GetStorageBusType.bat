@@ -1,0 +1,1 @@
+wmic /namespace:\\root\microsoft\windows\storage path msft_disk get FriendlyName,BusType
